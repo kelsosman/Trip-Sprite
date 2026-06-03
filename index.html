@@ -1,295 +1,502 @@
-/**
- * Trip Sprite — Demo Data
- *
- * This file contains static destination data for the portfolio demo.
- * In the full AI-powered version, this data is generated dynamically
- * by the Claude API based on user inputs.
- *
- * AI Integration Points:
- * - Destination matching (POST /v1/messages with trip context)
- * - Itinerary generation (streaming response)
- * - Budget calculation (structured JSON output)
- * - Weather-aware alternates (web search tool)
- * - Flex toggle recalculation (re-prompt with updated params)
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trip Sprite — Weekend Trip Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
 
-const TRIP_DATA = {
-  moab: {
-    name: "Moab, UT",
-    meta: "Weekend · 2 people · 🐾 Dog-friendly · $$ Budget",
-    days: [
-      {
-        label: "Friday — Arrival Day",
-        weather: "🌤 Sunny, 68°F",
-        activities: [
-          {
-            time: "3:00 PM",
-            title: "Depart Denver",
-            desc: "3.5-hour drive south on US-191. Great stops at Moab's Back of Beyond for snacks on arrival."
-          },
-          {
-            time: "7:00 PM",
-            title: "Check In & Settle",
-            desc: "Check into your dog-friendly cabin or Airbnb. Many allow dogs with no pet fee — check BringFido."
-          },
-          {
-            time: "8:30 PM",
-            title: "Dinner at Moab Brewery",
-            desc: "Best nachos in town, great craft beers, pup-friendly patio. Easy, casual Friday vibe."
-          },
-          {
-            time: "10:00 PM",
-            title: "Stargazing near Sorrel River",
-            desc: "Walk 5 min from town toward the river flats. Gold Tier dark sky — Milky Way visible with naked eye in clear conditions."
-          }
-        ],
-        weatherAlt: "🌧️ Rain plan: Visit Moab Giants Dinosaur Park (covered exhibits) or downtown galleries."
-      },
-      {
-        label: "Saturday — Big Day",
-        weather: "☀️ Sunny, 74°F",
-        activities: [
-          {
-            time: "8:30 AM",
-            title: "Breakfast at Love Muffin Café",
-            desc: "Best egg sandwiches in Moab. Get there before 9AM to beat the line. Cash-friendly."
-          },
-          {
-            time: "10:00 AM",
-            title: "Corona Arch Trail",
-            desc: "3.5 miles round-trip, dog-friendly on-leash, stunning arch hike with minimal tourists vs. Arches NP. AllTrails rated ★★★★½."
-          },
-          {
-            time: "1:00 PM",
-            title: "Lunch at Moab Food Truck Park",
-            desc: "Rotating vendors, outdoor seating, totally dog-friendly. Budget ~$12-15/person."
-          },
-          {
-            time: "2:30 PM",
-            title: "Arches NP (timed entry)",
-            desc: "Book ahead at recreation.gov — required March–October. Walk to Balanced Rock and Windows Section. Dogs allowed on paved paths."
-          },
-          {
-            time: "6:30 PM",
-            title: "Sunset at Dead Horse Point State Park",
-            desc: "30-min drive but worth every mile. Canyon rim sunset over Colorado River gorge. Dogs on leash OK."
-          },
-          {
-            time: "8:00 PM",
-            title: "Dinner at Desert Bistro",
-            desc: "Fine dining in Moab — the splurge option. Book ahead. Or keep it casual at Eddie McStiff's on the patio."
-          }
-        ],
-        weatherAlt: "🌧️ Rain plan: Arches still stunning in clouds. Alternatively, drive the scenic La Sal Mountain Loop — no entry required."
-      },
-      {
-        label: "Sunday — Easy Morning & Drive Home",
-        weather: "⛅ Partly cloudy, 65°F",
-        activities: [
-          {
-            time: "8:00 AM",
-            title: "Coffee & pastry at Epiphany Espresso",
-            desc: "Low-key local spot. Dog-friendly sidewalk seating. Perfect slow Sunday vibe."
-          },
-          {
-            time: "9:30 AM",
-            title: "Quick hike: Bowen Trail or Negro Bill Canyon",
-            desc: "Easy trail along a creek — morning golden light, dog-friendly, no crowd. 4 miles round-trip or shorter."
-          },
-          {
-            time: "12:00 PM",
-            title: "Lunch & head out",
-            desc: "Grab lunch at a local spot before the 3.5-hour drive home. I-70 scenic option via Green River adds 20 min."
-          }
-        ],
-        weatherAlt: "🌧️ Rain plan: Visit Canyonlands Visitor Center or browse the local art galleries on Main St."
-      }
-    ],
-    budget: [
-      { label: "🚗 Gas (Denver → Moab round-trip)", amount: "$45–60" },
-      { label: "🏠 Lodging (2 nights, dog-friendly cabin, split)", amount: "$120–200" },
-      { label: "🍺 Food & drinks (3 days, ~$40–60/day)", amount: "$120–180" },
-      { label: "🏜️ Arches NP entry (per person)", amount: "$35" },
-      { label: "🌟 Dead Horse Point State Park", amount: "$20" },
-      { label: "🧊 Misc (ice, snacks, tips)", amount: "$30–50" },
-    ],
-    total: "$370–545 per person",
-    packing: {
-      gear: ["Microspikes (early spring)", "Trekking poles", "Hydration pack", "Headlamp for stargazing"],
-      dog: ["Collapsible water bowl", "Dog booties (hot rock in summer)", "Long lead for campsites", "Poop bags × lots"],
-      layers: ["Light puffy jacket (cool nights)", "Buff / sun hat", "Sunscreen SPF 50+"],
-      misc: ["Arches timed entry confirmation", "Recreation.gov reservation", "Cash for food trucks"]
-    },
-    share: `✦ MOAB WEEKEND — TRIP SPRITE PLAN ✦
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-sprite">✦</span>
+        <span class="logo-text">Trip Sprite</span>
+      </div>
+      <nav class="header-nav">
+        <a href="#how-it-works">How it works</a>
+        <a href="#demo">Try demo</a>
+        <a href="https://github.com" target="_blank" class="nav-github">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
 
-📍 Moab, Utah · 3.5 hrs from Denver
-📅 Friday–Sunday · 2 people · 🐾 Dog-friendly
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-blob blob-1"></div>
+      <div class="hero-blob blob-2"></div>
+      <div class="hero-blob blob-3"></div>
+      <div class="grain"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Weekend trip planner</p>
+      <h1 class="hero-headline">
+        Your next adventure<br />
+        <em>starts here.</em>
+      </h1>
+      <p class="hero-sub">
+        Distance-aware. Dog-friendly. Budget-smart. Trip Sprite plans 1–7 day trips built around your vibe, your group, and the weather outside.
+      </p>
+      <div class="hero-tags">
+        <span>🐾 Dog-friendly</span>
+        <span>🗺️ Distance-aware</span>
+        <span>💸 Budget-smart</span>
+        <span>☁️ Weather alternates</span>
+        <span>👯 Group-balanced</span>
+      </div>
+      <a href="#demo" class="cta-btn">Plan a trip →</a>
+    </div>
+    <div class="hero-visual">
+      <div class="tile-preview-stack">
+        <div class="tile-preview tp-1">
+          <div class="tp-tag">3.5 hrs · $$$</div>
+          <div class="tp-name">Moab, UT</div>
+          <div class="tp-vibe">Red rock · Arches · Stargazing</div>
+        </div>
+        <div class="tile-preview tp-2">
+          <div class="tp-tag">2 hrs · $$</div>
+          <div class="tp-name">Salida, CO</div>
+          <div class="tp-vibe">Hot springs · Hiking · Artsy</div>
+        </div>
+        <div class="tile-preview tp-3">
+          <div class="tp-tag">1.5 hrs · $</div>
+          <div class="tp-name">Nederland, CO</div>
+          <div class="tp-vibe">Mountains · Cozy · Local</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-HIGHLIGHTS:
-• 🥾 Corona Arch Trail (dog-friendly!)
-• 🌅 Arches NP sunset (book timed entry!)
-• 🌌 Milky Way stargazing by the river
-• 🍻 Moab Brewery Friday night
-• 🏜️ Dead Horse Point Saturday sunset
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="section-inner">
+      <p class="section-label">The flow</p>
+      <h2 class="section-title">Six steps to your perfect trip</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon">📍</div>
+          <h3>Trip Basics</h3>
+          <p>Trip length, solo or group, starting city, budget, and whether the dog is coming.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon">🌄</div>
+          <h3>Vibes & Priorities</h3>
+          <p>Hiking, cozy cabin, artsy, food scene, wine country — adjustable any time mid-flow.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon">👥</div>
+          <h3>Group Profiles</h3>
+          <p>Sleep-in vs early hike, nature vs city, structured vs spontaneous. We balance it all.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <div class="step-icon">🚗</div>
+          <h3>Transportation</h3>
+          <p>Car, rental, RV, flights, rideshare — cost and timing adapt to your mode.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">05</div>
+          <div class="step-icon">🏕️</div>
+          <h3>Lodging</h3>
+          <p>Airbnb, cabin, hotel, camping, unique stays — with booking links to BringFido, Airbnb & VRBO.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">06</div>
+          <div class="step-icon">⚡</div>
+          <h3>Flex Toggles</h3>
+          <p>Change the dog, budget, vibe, or region at any point. Everything recalculates instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-BUDGET SNAPSHOT:
-~$370–545/person all-in (gas, lodging, food, parks)
+  <!-- DEMO / WIZARD -->
+  <section class="demo-section" id="demo">
+    <div class="section-inner">
+      <p class="section-label">Interactive demo</p>
+      <h2 class="section-title">Let's plan your trip</h2>
 
-BOOKING LINKS:
-🐾 Dog-friendly lodging: bringfido.com/lodging/city/moab_ut_us
-🏡 Airbnb options: airbnb.com/s/Moab--UT/homes
-🎟️ Arches timed entry: recreation.gov
+      <div class="wizard-shell">
+        <!-- Progress bar -->
+        <div class="wizard-progress">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-steps" id="progressSteps"></div>
+        </div>
 
-See you on the road! 🚗✨`
-  },
+        <!-- Steps -->
+        <div class="wizard-body" id="wizardBody">
 
-  salida: {
-    name: "Salida, CO",
-    meta: "Weekend · 2 people · 🐾 Dog-friendly · $ Budget",
-    days: [
-      {
-        label: "Friday — Arrive & Unwind",
-        weather: "🌤 Sunny, 62°F",
-        activities: [
-          { time: "3:30 PM", title: "Depart Denver", desc: "2.5-hour drive on US-285. Easy, scenic drive through South Park." },
-          { time: "6:00 PM", title: "Check In", desc: "Dog-friendly Airbnb or cabin near the Arkansas River." },
-          { time: "7:00 PM", title: "Dinner at Amicas Pizza", desc: "Local favorite — wood-fired pizza and Colorado craft beers. Patio is pup-welcoming." },
-          { time: "9:00 PM", title: "Evening stroll through Downtown Salida", desc: "Walkable F Street art district. Pop into any bar still open — town stays friendly late." }
-        ],
-        weatherAlt: "🌧️ Rain plan: Explore the Salida SteamPlant Event Center and downtown galleries."
-      },
-      {
-        label: "Saturday — Hot Springs & Trails",
-        weather: "☀️ Sunny, 70°F",
-        activities: [
-          { time: "8:30 AM", title: "Breakfast at Moonlight Pizza & Brewpub", desc: "Great eggs, local vibes, casual pace." },
-          { time: "10:00 AM", title: "Monarch Crest Trail (partial)", desc: "Epic ridge-line hike above treeline. Dogs on leash OK. Bring layers — it gets cold fast above 12,000 ft." },
-          { time: "1:30 PM", title: "Lunch at Il Vicino Wood Oven Pizza", desc: "Local craft brewery on-site. Grab a table outside with the dog." },
-          { time: "3:00 PM", title: "Salida Hot Springs Aquatic Center", desc: "World's largest indoor hot springs pool. Note: dogs cannot enter, so coordinate logistics." },
-          { time: "6:00 PM", title: "Arkansas River walk with the dog", desc: "Riverside Riverwalk trail is flat, leash-friendly, and beautiful at golden hour." },
-          { time: "7:30 PM", title: "Dinner at Boathouse Cantina", desc: "Right on the river. Margaritas + tacos + dog-friendly patio." }
-        ],
-        weatherAlt: "🌧️ Rain plan: Visit Tenderfoot Mountain area or do a quick drive up to Monarch Pass."
-      },
-      {
-        label: "Sunday — Easy & Out",
-        weather: "⛅ Mostly sunny, 58°F",
-        activities: [
-          { time: "8:30 AM", title: "Coffee at Café Dawn", desc: "Best espresso in Salida, hands down. Grab a pastry too." },
-          { time: "9:30 AM", title: "Short Arkansas River trail", desc: "The Riverside Trail is a flat, easy morning walk — great for dogs, great for a slow Sunday." },
-          { time: "11:30 AM", title: "Browse the Salida Art District", desc: "F Street has galleries, gift shops, and the best fudge. Budget $20 for impulse purchases." },
-          { time: "1:00 PM", title: "Head home", desc: "2.5 hours back to Denver. Easy, no rush." }
-        ],
-        weatherAlt: "🌧️ Rain plan: Skip the trail, linger at coffee shops and browse the galleries longer."
-      }
-    ],
-    budget: [
-      { label: "🚗 Gas (Denver → Salida round-trip)", amount: "$35–50" },
-      { label: "🏠 Lodging (2 nights, dog-friendly, split)", amount: "$90–150" },
-      { label: "🍺 Food & drinks (3 days)", amount: "$100–150" },
-      { label: "♨️ Hot Springs entry", amount: "$15–20" },
-      { label: "🧊 Misc (snacks, tips, art)", amount: "$30–50" },
-    ],
-    total: "$270–420 per person",
-    packing: {
-      gear: ["Warm layers (mountain weather)", "Trekking poles for Monarch Crest", "Sunscreen + lip balm"],
-      dog: ["Collapsible bowl", "Leash + ID tag", "Towel (river mud is real)"],
-      layers: ["Puffy jacket (above 12k ft)", "Gloves", "Buff"],
-      misc: ["Hot springs cash/card", "Reservation details", "Snacks for the road"]
-    },
-    share: `✦ SALIDA WEEKEND — TRIP SPRITE PLAN ✦
+          <!-- STEP 1: Trip Basics -->
+          <div class="wizard-step active" data-step="1">
+            <h3 class="step-title">Trip Basics</h3>
+            <div class="field-group">
+              <label>How long is your trip?</label>
+              <div class="btn-row" id="tripLength">
+                <button class="opt-btn" data-val="1">1 day</button>
+                <button class="opt-btn" data-val="2">2 days</button>
+                <button class="opt-btn" data-val="3">3 days</button>
+                <button class="opt-btn" data-val="4">4 days</button>
+                <button class="opt-btn active" data-val="weekend">Weekend</button>
+                <button class="opt-btn" data-val="5-7">5–7 days</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Who's going?</label>
+              <div class="btn-row" id="groupType">
+                <button class="opt-btn" data-val="solo">Solo</button>
+                <button class="opt-btn active" data-val="duo">Duo</button>
+                <button class="opt-btn" data-val="small">Small group (3–4)</button>
+                <button class="opt-btn" data-val="large">Large group (5–7)</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Starting city</label>
+              <input type="text" class="text-input" id="startCity" value="Denver, CO" placeholder="Denver, CO" />
+            </div>
+            <div class="field-group">
+              <label>Budget range <span class="label-note">(per person)</span></label>
+              <div class="btn-row" id="budget">
+                <button class="opt-btn" data-val="low">$ Under $200</button>
+                <button class="opt-btn active" data-val="mid">$$ $200–500</button>
+                <button class="opt-btn" data-val="high">$$$ $500–1000</button>
+                <button class="opt-btn" data-val="splurge">$$$$ Splurge</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Max drive time <span class="label-note">(from start city)</span></label>
+              <div class="btn-row" id="driveTime">
+                <button class="opt-btn" data-val="1">1 hr</button>
+                <button class="opt-btn" data-val="2">2 hrs</button>
+                <button class="opt-btn active" data-val="3">3 hrs</button>
+                <button class="opt-btn" data-val="4">4 hrs</button>
+                <button class="opt-btn" data-val="5+">5+ hrs</button>
+                <button class="opt-btn" data-val="fly">Open to flying</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Dog coming along?</label>
+              <div class="toggle-row">
+                <button class="toggle-btn active" id="dogToggle" data-val="yes">🐾 Yes, bring the pup</button>
+                <button class="toggle-btn" id="dogToggleNo" data-val="no">No dogs this time</button>
+              </div>
+            </div>
+          </div>
 
-📍 Salida, Colorado · 2.5 hrs from Denver
-📅 Friday–Sunday · 2 people · 🐾 Dog-friendly
+          <!-- STEP 2: Vibes -->
+          <div class="wizard-step" data-step="2">
+            <h3 class="step-title">Vibes & Priorities</h3>
+            <div class="field-group">
+              <label>Choose your vibes <span class="label-note">(pick all that apply)</span></label>
+              <div class="vibe-grid" id="vibeGrid">
+                <button class="vibe-btn active" data-val="hiking">🥾 Hiking</button>
+                <button class="vibe-btn" data-val="cozy-cabin">🏠 Cozy Cabin</button>
+                <button class="vibe-btn active" data-val="stargazing">🌌 Stargazing</button>
+                <button class="vibe-btn" data-val="artsy">🎨 Artsy</button>
+                <button class="vibe-btn active" data-val="food-scene">🍻 Food & Breweries</button>
+                <button class="vibe-btn" data-val="wine">🍷 Wine Country</button>
+                <button class="vibe-btn" data-val="hot-springs">♨️ Hot Springs</button>
+                <button class="vibe-btn" data-val="relaxing">😌 Relaxing</button>
+                <button class="vibe-btn" data-val="adventure">🧗 Adventure</button>
+                <button class="vibe-btn" data-val="museums">🏛️ Museums</button>
+                <button class="vibe-btn" data-val="scenic-drive">🚗 Scenic Drive</button>
+                <button class="vibe-btn" data-val="wellness">🧘 Wellness</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Must-dos <span class="label-note">(optional)</span></label>
+              <input type="text" class="text-input" id="mustDos" placeholder="e.g. stargazing, a good brewery, dog-friendly trails" />
+            </div>
+            <div class="field-group">
+              <label>Avoid list <span class="label-note">(optional)</span></label>
+              <input type="text" class="text-input" id="avoidList" placeholder="e.g. tourist traps, early mornings, cold camping" />
+            </div>
+            <div class="field-group">
+              <label>Scope</label>
+              <div class="btn-row" id="scope">
+                <button class="opt-btn active" data-val="local">🇺🇸 Domestic</button>
+                <button class="opt-btn" data-val="international">🌍 International</button>
+              </div>
+            </div>
+          </div>
 
-HIGHLIGHTS:
-• ♨️ Salida Hot Springs (world's largest indoor!)
-• 🥾 Monarch Crest Trail above treeline
-• 🎨 F Street Art District wandering
-• 🍻 Amicas + Boathouse Cantina
-• 🌊 Arkansas River at golden hour
+          <!-- STEP 3: Group Personalities -->
+          <div class="wizard-step" data-step="3">
+            <h3 class="step-title">Group Personality Profiles</h3>
+            <p class="step-desc">Slide to describe your group's overall style. Trip Sprite balances the itinerary accordingly.</p>
+            <div class="slider-list">
+              <div class="slider-row">
+                <span class="slider-label-left">😴 Sleep In</span>
+                <div class="slider-wrap">
+                  <input type="range" min="0" max="100" value="30" class="vibe-slider" id="sl-wake" />
+                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <span class="slider-label-right">🌅 Early Hike</span>
+              </div>
+              <div class="slider-row">
+                <span class="slider-label-left">🌲 Nature</span>
+                <div class="slider-wrap">
+                  <input type="range" min="0" max="100" value="60" class="vibe-slider" id="sl-nature" />
+                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <span class="slider-label-right">🏙️ City</span>
+              </div>
+              <div class="slider-row">
+                <span class="slider-label-left">📋 Structured</span>
+                <div class="slider-wrap">
+                  <input type="range" min="0" max="100" value="45" class="vibe-slider" id="sl-plan" />
+                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <span class="slider-label-right">🎲 Spontaneous</span>
+              </div>
+              <div class="slider-row">
+                <span class="slider-label-left">💰 Budget-Savvy</span>
+                <div class="slider-wrap">
+                  <input type="range" min="0" max="100" value="50" class="vibe-slider" id="sl-budget" />
+                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <span class="slider-label-right">✨ Splurge</span>
+              </div>
+            </div>
+          </div>
 
-BUDGET SNAPSHOT:
-~$270–420/person all-in
+          <!-- STEP 4: Transport & Lodging -->
+          <div class="wizard-step" data-step="4">
+            <h3 class="step-title">Getting There & Sleeping</h3>
+            <div class="field-group">
+              <label>Transportation</label>
+              <div class="btn-row wrap" id="transport">
+                <button class="opt-btn active" data-val="own-car">🚗 Own car</button>
+                <button class="opt-btn" data-val="rental">🚙 Rental car</button>
+                <button class="opt-btn" data-val="rv">🚌 RV / Campervan</button>
+                <button class="opt-btn" data-val="flight">✈️ Flights</button>
+                <button class="opt-btn" data-val="rideshare">🚕 Rideshare only</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Lodging vibe</label>
+              <div class="btn-row wrap" id="lodging">
+                <button class="opt-btn" data-val="airbnb">🏡 Airbnb</button>
+                <button class="opt-btn active" data-val="cabin">🌲 Cabin</button>
+                <button class="opt-btn" data-val="hotel">🏨 Hotel</button>
+                <button class="opt-btn" data-val="camping">⛺ Camping</button>
+                <button class="opt-btn" data-val="unique">🦙 Unique stay</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Memory <span class="label-note">(personalize future trips)</span></label>
+              <div class="toggle-row">
+                <button class="toggle-btn active" id="memOn">✦ Memory On</button>
+                <button class="toggle-btn" id="memOff">Memory Off</button>
+              </div>
+            </div>
+          </div>
 
-BOOKING LINKS:
-🐾 Dog-friendly lodging: bringfido.com/lodging/city/salida_co_us
-🏡 Airbnb options: airbnb.com/s/Salida--CO/homes
+          <!-- STEP 5: Results (demo tiles) -->
+          <div class="wizard-step" data-step="5" id="resultsStep">
+            <h3 class="step-title">Your Matched Destinations</h3>
+            <p class="step-desc results-sub">Based on your inputs, here are 3 trip options curated for your vibe. <span class="ai-note">← In the full app, this is generated live by AI.</span></p>
 
-See you on the river! 🏄✨`
-  },
+            <div class="flex-toggles">
+              <span class="toggle-label">Flex toggles:</span>
+              <button class="flex-btn active" id="flexDog">🐾 Dog On</button>
+              <button class="flex-btn" id="flexBudgetUp">💸 Budget Up</button>
+              <button class="flex-btn" id="flexRelax">😌 More Relaxing</button>
+              <button class="flex-btn" id="flexAdventure">🧗 More Adventure</button>
+              <button class="flex-btn" id="flexSwap">🔀 Swap Region</button>
+            </div>
 
-  pagosa: {
-    name: "Pagosa Springs, CO",
-    meta: "Weekend · 2 people · 🐾 Dog-friendly · $$$ Budget",
-    days: [
-      {
-        label: "Friday — Drive & Dip",
-        weather: "🌤 Sunny, 58°F",
-        activities: [
-          { time: "2:00 PM", title: "Depart Denver", desc: "4-hour drive on US-160 through South Fork. Longer but worth it — the San Juan Mountains are stunning." },
-          { time: "6:30 PM", title: "Check In", desc: "Dog-friendly cabin or VRBO near the river. Many properties allow pets." },
-          { time: "8:00 PM", title: "Evening soak at The Springs Resort", desc: "Multiple pools at varying temps along the San Juan River. Open until 11PM. Pure heaven after the drive." }
-        ],
-        weatherAlt: "🌧️ Rain plan: Hot springs are even better in the rain! Embrace it."
-      },
-      {
-        label: "Saturday — Full Wellness Day",
-        weather: "☀️ Sunny, 64°F",
-        activities: [
-          { time: "9:00 AM", title: "Breakfast at Kip's Grill", desc: "Good eggs, local crowd, right in town." },
-          { time: "10:30 AM", title: "Hiking: Devil's Causeway or Treasure Falls", desc: "Treasure Falls is dog-friendly, 30 min round-trip. Devil's Causeway is a longer commitment — thrilling ridge walk." },
-          { time: "1:30 PM", title: "Lunch at Pagosa Brewing Company", desc: "Dog-friendly patio right on the river. Great burgers, local craft beer." },
-          { time: "3:00 PM", title: "Afternoon soak — The Springs Day Pass", desc: "Multiple thermal pools, towel service. Book in advance, especially on weekends." },
-          { time: "7:30 PM", title: "Dinner at Pagosa Baking Company", desc: "Best food in town. Soups, sandwiches, incredible baked goods. Arrive early — it fills up." }
-        ],
-        weatherAlt: "🌧️ Rain plan: Stay in the hot springs longer — you're already wet. Evening hot chocolate at the bakery."
-      },
-      {
-        label: "Sunday — Morning Soak & Head Out",
-        weather: "⛅ Partly cloudy, 55°F",
-        activities: [
-          { time: "8:00 AM", title: "Sunrise soak at The Springs", desc: "The resort opens early and sunrise on the river is genuinely magical." },
-          { time: "10:00 AM", title: "Coffee & pastry downtown", desc: "Stroll the small main street before departure." },
-          { time: "11:00 AM", title: "Head back to Denver", desc: "4-hour drive home. Stop at South Fork for lunch to break the drive." }
-        ],
-        weatherAlt: "🌧️ Any weather is fine when you're soaking. Just go."
-      }
-    ],
-    budget: [
-      { label: "🚗 Gas (Denver → Pagosa round-trip)", amount: "$60–80" },
-      { label: "🏠 Lodging (2 nights, dog-friendly, split)", amount: "$150–250" },
-      { label: "🍺 Food & drinks (3 days)", amount: "$120–180" },
-      { label: "♨️ The Springs Resort passes (2 sessions)", amount: "$80–120" },
-      { label: "🧊 Misc", amount: "$30–50" },
-    ],
-    total: "$440–680 per person",
-    packing: {
-      gear: ["Swimsuit (obviously)", "Flip flops for hot springs", "Waterproof bag for phone"],
-      dog: ["Collapsible bowl", "Dog towel (river access everywhere)", "Leash"],
-      layers: ["Light jacket (elevation + night air)", "Warm socks for the drive"],
-      misc: ["The Springs reservation", "VRBO confirmation", "Cash for tips + parking"]
-    },
-    share: `✦ PAGOSA SPRINGS WEEKEND — TRIP SPRITE PLAN ✦
+            <div class="dest-tiles" id="destTiles">
 
-📍 Pagosa Springs, Colorado · 4 hrs from Denver
-📅 Friday–Sunday · 2 people · 🐾 Dog-friendly
+              <div class="dest-tile selected" data-dest="moab">
+                <div class="tile-header">
+                  <div class="tile-rank">✦ Best Match</div>
+                  <div class="tile-dog">🐾 Dog-friendly</div>
+                </div>
+                <div class="tile-img moab-img"></div>
+                <div class="tile-body">
+                  <h4 class="tile-name">Moab, UT</h4>
+                  <div class="tile-meta">
+                    <span>🚗 3.5 hrs from Denver</span>
+                    <span>💸 ~$350–500/person</span>
+                  </div>
+                  <div class="tile-vibes">
+                    <span>Red Rock</span><span>Arches</span><span>Stargazing</span><span>Trails</span>
+                  </div>
+                  <p class="tile-highlight">⭐ Highlight: Arches National Park + Corona Arch sunset hike</p>
+                  <p class="tile-why">Why it fits: Stellar stargazing (Gold Tier dark sky), dog-allowed trails, and a growing brewery scene. Your budget lands comfortably in range for a dog-friendly cabin.</p>
+                  <div class="tile-links">
+                    <a href="https://maps.google.com?q=Moab,+Utah" target="_blank" class="tile-link">📍 Map</a>
+                    <a href="https://www.bringfido.com/lodging/city/moab_ut_us/" target="_blank" class="tile-link">🐾 BringFido</a>
+                    <a href="https://www.airbnb.com/s/Moab--UT/homes" target="_blank" class="tile-link">🏡 Airbnb</a>
+                    <a href="https://www.alltrails.com/us/utah/moab" target="_blank" class="tile-link">🥾 AllTrails</a>
+                  </div>
+                </div>
+              </div>
 
-HIGHLIGHTS:
-• ♨️ The Springs Resort (world's deepest hot spring!)
-• 🥾 Treasure Falls + Devil's Causeway options
-• 🍻 Pagosa Brewing Company on the river
-• 🌄 San Juan Mountain scenery on the drive
-• 🌅 Sunrise soak Sunday morning
+              <div class="dest-tile" data-dest="salida">
+                <div class="tile-header">
+                  <div class="tile-rank">② Runner Up</div>
+                  <div class="tile-dog">🐾 Dog-friendly</div>
+                </div>
+                <div class="tile-img salida-img"></div>
+                <div class="tile-body">
+                  <h4 class="tile-name">Salida, CO</h4>
+                  <div class="tile-meta">
+                    <span>🚗 2.5 hrs from Denver</span>
+                    <span>💸 ~$250–400/person</span>
+                  </div>
+                  <div class="tile-vibes">
+                    <span>Hot Springs</span><span>Artsy</span><span>Hiking</span><span>Breweries</span>
+                  </div>
+                  <p class="tile-highlight">⭐ Highlight: Monarch Crest Trail + Salida Hot Springs Aquatic Center</p>
+                  <p class="tile-why">Why it fits: Budget-friendlier than Moab, with a walkable artsy downtown, dog-welcoming lodging, and that hot springs tick on your list.</p>
+                  <div class="tile-links">
+                    <a href="https://maps.google.com?q=Salida,+Colorado" target="_blank" class="tile-link">📍 Map</a>
+                    <a href="https://www.bringfido.com/lodging/city/salida_co_us/" target="_blank" class="tile-link">🐾 BringFido</a>
+                    <a href="https://www.airbnb.com/s/Salida--CO/homes" target="_blank" class="tile-link">🏡 Airbnb</a>
+                    <a href="https://www.alltrails.com/us/colorado/salida" target="_blank" class="tile-link">🥾 AllTrails</a>
+                  </div>
+                </div>
+              </div>
 
-BUDGET SNAPSHOT:
-~$440–680/person (longer drive, premium experience)
+              <div class="dest-tile" data-dest="pagosa">
+                <div class="tile-header">
+                  <div class="tile-rank">③ Wild Card</div>
+                  <div class="tile-dog">🐾 Dog-friendly</div>
+                </div>
+                <div class="tile-img pagosa-img"></div>
+                <div class="tile-body">
+                  <h4 class="tile-name">Pagosa Springs, CO</h4>
+                  <div class="tile-meta">
+                    <span>🚗 4 hrs from Denver</span>
+                    <span>💸 ~$300–550/person</span>
+                  </div>
+                  <div class="tile-vibes">
+                    <span>Hot Springs</span><span>Cozy</span><span>Scenic</span><span>Wellness</span>
+                  </div>
+                  <p class="tile-highlight">⭐ Highlight: Wading pools at The Springs Resort on the San Juan River</p>
+                  <p class="tile-why">Why it fits: World's deepest geothermal hot spring + incredible San Juan mountain views. A bit further but worth it if you want the full wellness experience.</p>
+                  <div class="tile-links">
+                    <a href="https://maps.google.com?q=Pagosa+Springs,+Colorado" target="_blank" class="tile-link">📍 Map</a>
+                    <a href="https://www.bringfido.com/lodging/city/pagosa_springs_co_us/" target="_blank" class="tile-link">🐾 BringFido</a>
+                    <a href="https://www.vrbo.com/vacation-rentals/usa/colorado/pagosa-springs" target="_blank" class="tile-link">🏠 VRBO</a>
+                    <a href="https://www.alltrails.com/us/colorado/pagosa-springs" target="_blank" class="tile-link">🥾 AllTrails</a>
+                  </div>
+                </div>
+              </div>
 
-BOOKING LINKS:
-🐾 Dog-friendly lodging: bringfido.com/lodging/city/pagosa_springs_co_us
-🏠 VRBO options: vrbo.com/vacation-rentals/usa/colorado/pagosa-springs
-♨️ The Springs: pagosahotsprings.com
+            </div>
 
-Worth every mile! 🏔️✨`
-  }
-};
+            <div class="results-cta">
+              <p>Pick a destination to see your full itinerary, budget breakdown, and packing list.</p>
+              <div class="pick-row">
+                <button class="pick-btn active-pick" onclick="selectDest('moab')">Moab →</button>
+                <button class="pick-btn" onclick="selectDest('salida')">Salida →</button>
+                <button class="pick-btn" onclick="selectDest('pagosa')">Pagosa →</button>
+              </div>
+            </div>
+
+            <!-- ITINERARY PANEL (shown after destination pick) -->
+            <div class="itinerary-panel" id="itineraryPanel">
+              <div class="itin-header">
+                <h3 id="itinTitle">Moab Weekend Itinerary</h3>
+                <div class="itin-meta" id="itinMeta">3 days · 2 people · 🐾 Dog-friendly · $$ Budget</div>
+              </div>
+
+              <div class="itin-tabs">
+                <button class="itin-tab active" data-tab="itinerary">📅 Itinerary</button>
+                <button class="itin-tab" data-tab="budget">💰 Budget</button>
+                <button class="itin-tab" data-tab="packing">🎒 Packing</button>
+                <button class="itin-tab" data-tab="share">📤 Share</button>
+              </div>
+
+              <div class="itin-tab-content active" id="tab-itinerary">
+                <div id="itinDays"></div>
+              </div>
+
+              <div class="itin-tab-content" id="tab-budget">
+                <div id="budgetBreakdown"></div>
+              </div>
+
+              <div class="itin-tab-content" id="tab-packing">
+                <div id="packingList"></div>
+              </div>
+
+              <div class="itin-tab-content" id="tab-share">
+                <div class="share-card" id="shareCard"></div>
+                <button class="copy-btn" id="copyShare">📋 Copy to clipboard</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Wizard Nav -->
+        <div class="wizard-nav">
+          <button class="nav-btn secondary" id="prevBtn" onclick="changeStep(-1)" style="display:none">← Back</button>
+          <div class="step-counter" id="stepCounter">Step 1 of 4</div>
+          <button class="nav-btn primary" id="nextBtn" onclick="changeStep(1)">Continue →</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES CALLOUT -->
+  <section class="features-strip">
+    <div class="section-inner">
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🔗</div>
+          <h4>Live booking links</h4>
+          <p>BringFido, Airbnb, and VRBO links generated for each recommended destination.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🥾</div>
+          <h4>AllTrails integration</h4>
+          <p>Trail links with dog-friendly filters surfaced for every destination.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🌤️</div>
+          <h4>Weather-aware alternates</h4>
+          <p>Every itinerary includes rainy-day and weather backup plans built in.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💬</div>
+          <h4>Group-ready summaries</h4>
+          <p>One-tap group chat export with budget snapshot, activities, and map link.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="logo-sprite">✦</span> Trip Sprite
+      </div>
+      <p class="footer-tagline">Built with Claude AI · Part of an AI-powered portfolio</p>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank">GitHub ↗</a>
+        <a href="https://www.anthropic.com" target="_blank">Powered by Claude</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/wizard.js"></script>
+</body>
+</html>
