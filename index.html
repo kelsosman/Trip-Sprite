@@ -1,502 +1,1079 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trip Sprite — Weekend Trip Planner</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trip Sprite — Weekend Trip Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sand:#F7F3EE;--cream:#FDFAF7;--espresso:#2C1F14;--terra:#C4633A;
+  --terra-light:#F0E0D6;--terra-mid:#E8A882;--sage:#6B7F5E;--sage-light:#E8EDE5;
+  --muted:#8A7D72;--border:rgba(44,31,20,0.12);--border-strong:rgba(44,31,20,0.25);
+  --radius:14px;--font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--cream);color:var(--espresso);min-height:100vh}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--cream);border-bottom:0.5px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--terra)}
+.logo-sub{font-size:11px;color:var(--muted);font-weight:300;letter-spacing:0.5px;text-transform:uppercase;margin-top:1px}
+
+/* HERO */
+.hero{padding:56px 24px 48px;text-align:center;max-width:640px;margin:0 auto}
+.hero h1{font-family:var(--font-display);font-size:clamp(32px,6vw,52px);font-weight:500;line-height:1.15;color:var(--espresso);margin-bottom:14px}
+.hero h1 em{color:var(--terra);font-style:normal}
+.hero p{font-size:16px;color:var(--muted);line-height:1.7;margin-bottom:28px;font-weight:300}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.badge{font-size:12px;padding:4px 12px;border-radius:20px;background:var(--sand);border:0.5px solid var(--border-strong);color:var(--muted)}
+.cta-btn{display:inline-block;background:var(--terra);color:#fff;font-family:var(--font-body);font-size:15px;font-weight:500;
+  padding:13px 32px;border-radius:30px;border:none;cursor:pointer;transition:opacity .15s,transform .1s;text-decoration:none}
+.cta-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* WIZARD */
+.wizard-wrap{max-width:680px;margin:0 auto;padding:0 20px 80px}
+.section-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--terra);font-weight:500;margin-bottom:20px}
+.progress-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:32px;overflow:hidden}
+.progress-fill{height:100%;background:var(--terra);border-radius:2px;transition:width .4s ease}
+
+.step{display:none}
+.step.active{display:block}
+.step-title{font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:6px}
+.step-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+
+/* FORM ELEMENTS */
+.field{margin-bottom:22px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:8px;color:var(--espresso)}
+.field input[type=text],.field input[type=number],.field select{
+  width:100%;padding:10px 14px;border:0.5px solid var(--border-strong);border-radius:10px;
+  font-family:var(--font-body);font-size:14px;background:var(--sand);color:var(--espresso);outline:none;
+  transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--terra)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A7D72' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+
+.chip-group{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:7px 14px;border-radius:20px;border:0.5px solid var(--border-strong);background:var(--sand);
+  cursor:pointer;font-size:13px;font-family:var(--font-body);color:var(--espresso);transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--terra);color:var(--terra)}
+.chip.on{background:var(--terra);color:#fff;border-color:var(--terra)}
+
+.range-wrap{display:flex;align-items:center;gap:12px}
+.range-wrap input[type=range]{flex:1;accent-color:var(--terra)}
+.range-val{font-size:13px;font-weight:500;min-width:60px;text-align:right;color:var(--terra)}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:0.5px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:14px}
+.toggle-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-switch .slider{position:absolute;inset:0;background:var(--border-strong);border-radius:12px;cursor:pointer;transition:.2s}
+.toggle-switch .slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle-switch input:checked+.slider{background:var(--terra)}
+.toggle-switch input:checked+.slider::before{transform:translateX(20px)}
+
+.nav-btns{display:flex;gap:12px;margin-top:32px}
+.btn-back{flex:1;padding:12px;border:0.5px solid var(--border-strong);border-radius:30px;background:transparent;
+  font-family:var(--font-body);font-size:14px;cursor:pointer;color:var(--muted);transition:all .15s}
+.btn-back:hover{border-color:var(--terra);color:var(--terra)}
+.btn-next{flex:2;padding:12px 24px;background:var(--terra);color:#fff;border:none;border-radius:30px;
+  font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:opacity .15s}
+.btn-next:hover{opacity:.88}
+
+/* RESULTS */
+#results{display:none;padding:0 20px 80px;max-width:680px;margin:0 auto}
+.results-header{padding:28px 0 20px;border-bottom:0.5px solid var(--border);margin-bottom:24px}
+.results-header h2{font-family:var(--font-display);font-size:26px;font-weight:500;margin-bottom:4px}
+.results-header p{font-size:13px;color:var(--muted)}
+
+.tile-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:32px}
+.tile{background:var(--sand);border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:18px;transition:border-color .15s,transform .1s;cursor:pointer}
+.tile:hover{border-color:var(--terra);transform:translateY(-1px)}
+.tile.selected{border-color:var(--terra);border-width:1.5px;background:var(--terra-light)}
+.tile-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.tile-name{font-family:var(--font-display);font-size:18px;font-weight:500}
+.tile-drive{font-size:12px;color:var(--muted);background:var(--cream);padding:3px 10px;border-radius:20px;border:0.5px solid var(--border);white-space:nowrap}
+.tile-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:400}
+.tag.vibe{background:var(--sage-light);color:var(--sage)}
+.tag.dog{background:#FFF3E0;color:#8B5E0A}
+.tag.budget{background:var(--terra-light);color:var(--terra)}
+.tile-highlight{font-size:13px;color:var(--espresso);margin-bottom:5px}
+.tile-why{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:12px}
+.tile-links{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tile-link{font-size:11px;color:var(--terra);text-decoration:none;padding:3px 8px;border:0.5px solid var(--terra);border-radius:6px;transition:all .15s}
+.tile-link:hover{background:var(--terra);color:#fff}
+.choose-btn{width:100%;padding:10px;background:var(--terra);color:#fff;border:none;border-radius:30px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s}
+.choose-btn:hover{opacity:.88}
+
+/* ITINERARY PANEL */
+#itinerary-panel{display:none;margin-top:8px}
+.itin-card{background:var(--cream);border:0.5px solid var(--border-strong);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+.itin-tabs{display:flex;border-bottom:0.5px solid var(--border)}
+.itin-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;font-family:var(--font-body);color:var(--muted);transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-0.5px}
+.itin-tab.active{color:var(--terra);border-bottom-color:var(--terra)}
+.itin-body{padding:18px}
+.itin-pane{display:none}
+.itin-pane.active{display:block}
+
+.day-block{margin-bottom:18px}
+.day-label{font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--terra);margin-bottom:8px;padding-bottom:4px;border-bottom:0.5px solid var(--border)}
+.activity-row{font-size:13px;padding:5px 0;border-bottom:0.5px solid var(--border);color:var(--espresso);display:flex;gap:8px}
+.activity-time{color:var(--muted);font-size:12px;min-width:52px;flex-shrink:0;padding-top:1px}
+.activity-row:last-child{border-bottom:none}
+
+.budget-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.budget-row:last-child{border-bottom:none;font-weight:500;font-size:14px}
+.budget-note{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.pack-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.pack-item{display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border)}
+.pack-item:last-child{border-bottom:none}
+.pack-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0}
+
+.book-grid{display:flex;flex-direction:column;gap:10px}
+.book-card{padding:12px 14px;background:var(--sand);border-radius:10px;border:0.5px solid var(--border)}
+.book-card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.book-card p{font-size:12px;color:var(--muted);margin-bottom:8px}
+.book-link{font-size:12px;color:var(--terra);text-decoration:none;font-weight:500}
+.book-link:hover{text-decoration:underline}
+
+/* FLEX TOGGLES */
+.flex-section{margin-bottom:24px}
+.flex-section h3{font-family:var(--font-display);font-size:17px;margin-bottom:10px}
+.flex-chips{display:flex;flex-wrap:wrap;gap:8px}
+.flex-chip{padding:7px 14px;border-radius:20px;border:0.5px solid var(--border-strong);background:var(--sand);cursor:pointer;font-size:12px;font-family:var(--font-body);color:var(--espresso);transition:all .15s}
+.flex-chip:hover{border-color:var(--terra);color:var(--terra)}
+
+/* SHARE CARD */
+.share-card{background:var(--terra-light);border:0.5px solid var(--terra);border-radius:var(--radius);padding:16px;font-size:13px;white-space:pre-wrap;line-height:1.7;margin-bottom:10px}
+.copy-btn{font-size:12px;padding:7px 16px;border-radius:20px;background:transparent;border:0.5px solid var(--terra);color:var(--terra);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.copy-btn:hover{background:var(--terra);color:#fff}
+.restart-btn{font-size:12px;padding:7px 16px;border-radius:20px;background:transparent;border:0.5px solid var(--border-strong);color:var(--muted);cursor:pointer;font-family:var(--font-body);margin-left:10px;transition:all .15s}
+.restart-btn:hover{border-color:var(--terra);color:var(--terra)}
+
+/* FOOTER */
+footer{text-align:center;padding:32px 20px;font-size:12px;color:var(--muted);border-top:0.5px solid var(--border)}
+</style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo">
-        <span class="logo-sprite">✦</span>
-        <span class="logo-text">Trip Sprite</span>
-      </div>
-      <nav class="header-nav">
-        <a href="#how-it-works">How it works</a>
-        <a href="#demo">Try demo</a>
-        <a href="https://github.com" target="_blank" class="nav-github">GitHub ↗</a>
-      </nav>
-    </div>
-  </header>
+<nav>
+  <div>
+    <div class="logo">Trip Sprite</div>
+    <div class="logo-sub">Weekend Trip Planner</div>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg">
-      <div class="hero-blob blob-1"></div>
-      <div class="hero-blob blob-2"></div>
-      <div class="hero-blob blob-3"></div>
-      <div class="grain"></div>
-    </div>
-    <div class="hero-content">
-      <p class="hero-eyebrow">Weekend trip planner</p>
-      <h1 class="hero-headline">
-        Your next adventure<br />
-        <em>starts here.</em>
-      </h1>
-      <p class="hero-sub">
-        Distance-aware. Dog-friendly. Budget-smart. Trip Sprite plans 1–7 day trips built around your vibe, your group, and the weather outside.
-      </p>
-      <div class="hero-tags">
-        <span>🐾 Dog-friendly</span>
-        <span>🗺️ Distance-aware</span>
-        <span>💸 Budget-smart</span>
-        <span>☁️ Weather alternates</span>
-        <span>👯 Group-balanced</span>
-      </div>
-      <a href="#demo" class="cta-btn">Plan a trip →</a>
-    </div>
-    <div class="hero-visual">
-      <div class="tile-preview-stack">
-        <div class="tile-preview tp-1">
-          <div class="tp-tag">3.5 hrs · $$$</div>
-          <div class="tp-name">Moab, UT</div>
-          <div class="tp-vibe">Red rock · Arches · Stargazing</div>
-        </div>
-        <div class="tile-preview tp-2">
-          <div class="tp-tag">2 hrs · $$</div>
-          <div class="tp-name">Salida, CO</div>
-          <div class="tp-vibe">Hot springs · Hiking · Artsy</div>
-        </div>
-        <div class="tile-preview tp-3">
-          <div class="tp-tag">1.5 hrs · $</div>
-          <div class="tp-name">Nederland, CO</div>
-          <div class="tp-vibe">Mountains · Cozy · Local</div>
-        </div>
+<!-- HERO -->
+<section class="hero" id="top">
+  <div style="font-size:48px;margin-bottom:16px">🌄</div>
+  <h1>Your next adventure <em>starts here</em></h1>
+  <p>Answer a few questions — dogs, budget, vibes — and Trip Sprite maps out your perfect weekend escape from Denver.</p>
+  <div class="hero-badges">
+    <span class="badge">🐾 Dog-friendly</span>
+    <span class="badge">💸 Budget-aware</span>
+    <span class="badge">🗺️ Drive-time matched</span>
+    <span class="badge">🏕️ Hidden gems</span>
+  </div>
+  <button class="cta-btn" onclick="startWizard()">Plan My Trip →</button>
+</section>
+
+<!-- WIZARD -->
+<div class="wizard-wrap" id="wizard" style="display:none">
+  <div class="section-label">Trip Planner</div>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:20%"></div></div>
+
+  <!-- STEP 1: BASICS -->
+  <div class="step active" id="step1">
+    <div class="step-title">Trip basics</div>
+    <div class="step-sub">Let's start with the fundamentals so we can find your match.</div>
+
+    <div class="field">
+      <label>How many days?</label>
+      <div class="chip-group" id="days-chips">
+        <div class="chip on" data-val="1" onclick="pickChip('days',this)">1 day</div>
+        <div class="chip" data-val="2" onclick="pickChip('days',this)">2 days</div>
+        <div class="chip" data-val="3" onclick="pickChip('days',this)">3 days</div>
+        <div class="chip" data-val="4" onclick="pickChip('days',this)">4 days</div>
+        <div class="chip" data-val="5" onclick="pickChip('days',this)">5–7 days</div>
       </div>
     </div>
-  </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="how-it-works" id="how-it-works">
-    <div class="section-inner">
-      <p class="section-label">The flow</p>
-      <h2 class="section-title">Six steps to your perfect trip</h2>
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-num">01</div>
-          <div class="step-icon">📍</div>
-          <h3>Trip Basics</h3>
-          <p>Trip length, solo or group, starting city, budget, and whether the dog is coming.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">02</div>
-          <div class="step-icon">🌄</div>
-          <h3>Vibes & Priorities</h3>
-          <p>Hiking, cozy cabin, artsy, food scene, wine country — adjustable any time mid-flow.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">03</div>
-          <div class="step-icon">👥</div>
-          <h3>Group Profiles</h3>
-          <p>Sleep-in vs early hike, nature vs city, structured vs spontaneous. We balance it all.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">04</div>
-          <div class="step-icon">🚗</div>
-          <h3>Transportation</h3>
-          <p>Car, rental, RV, flights, rideshare — cost and timing adapt to your mode.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">05</div>
-          <div class="step-icon">🏕️</div>
-          <h3>Lodging</h3>
-          <p>Airbnb, cabin, hotel, camping, unique stays — with booking links to BringFido, Airbnb & VRBO.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">06</div>
-          <div class="step-icon">⚡</div>
-          <h3>Flex Toggles</h3>
-          <p>Change the dog, budget, vibe, or region at any point. Everything recalculates instantly.</p>
-        </div>
+    <div class="field">
+      <label>Who's coming?</label>
+      <div class="chip-group" id="group-chips">
+        <div class="chip on" data-val="solo" onclick="pickChip('group',this)">Solo</div>
+        <div class="chip" data-val="duo" onclick="pickChip('group',this)">Duo</div>
+        <div class="chip" data-val="small" onclick="pickChip('group',this)">Small group (3–4)</div>
+        <div class="chip" data-val="large" onclick="pickChip('large',this)">Crew (5+)</div>
       </div>
     </div>
-  </section>
 
-  <!-- DEMO / WIZARD -->
-  <section class="demo-section" id="demo">
-    <div class="section-inner">
-      <p class="section-label">Interactive demo</p>
-      <h2 class="section-title">Let's plan your trip</h2>
+    <div class="field">
+      <label>Starting city</label>
+      <input type="text" id="startCity" value="Denver, CO" placeholder="Denver, CO" />
+    </div>
 
-      <div class="wizard-shell">
-        <!-- Progress bar -->
-        <div class="wizard-progress">
-          <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="progress-steps" id="progressSteps"></div>
-        </div>
-
-        <!-- Steps -->
-        <div class="wizard-body" id="wizardBody">
-
-          <!-- STEP 1: Trip Basics -->
-          <div class="wizard-step active" data-step="1">
-            <h3 class="step-title">Trip Basics</h3>
-            <div class="field-group">
-              <label>How long is your trip?</label>
-              <div class="btn-row" id="tripLength">
-                <button class="opt-btn" data-val="1">1 day</button>
-                <button class="opt-btn" data-val="2">2 days</button>
-                <button class="opt-btn" data-val="3">3 days</button>
-                <button class="opt-btn" data-val="4">4 days</button>
-                <button class="opt-btn active" data-val="weekend">Weekend</button>
-                <button class="opt-btn" data-val="5-7">5–7 days</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Who's going?</label>
-              <div class="btn-row" id="groupType">
-                <button class="opt-btn" data-val="solo">Solo</button>
-                <button class="opt-btn active" data-val="duo">Duo</button>
-                <button class="opt-btn" data-val="small">Small group (3–4)</button>
-                <button class="opt-btn" data-val="large">Large group (5–7)</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Starting city</label>
-              <input type="text" class="text-input" id="startCity" value="Denver, CO" placeholder="Denver, CO" />
-            </div>
-            <div class="field-group">
-              <label>Budget range <span class="label-note">(per person)</span></label>
-              <div class="btn-row" id="budget">
-                <button class="opt-btn" data-val="low">$ Under $200</button>
-                <button class="opt-btn active" data-val="mid">$$ $200–500</button>
-                <button class="opt-btn" data-val="high">$$$ $500–1000</button>
-                <button class="opt-btn" data-val="splurge">$$$$ Splurge</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Max drive time <span class="label-note">(from start city)</span></label>
-              <div class="btn-row" id="driveTime">
-                <button class="opt-btn" data-val="1">1 hr</button>
-                <button class="opt-btn" data-val="2">2 hrs</button>
-                <button class="opt-btn active" data-val="3">3 hrs</button>
-                <button class="opt-btn" data-val="4">4 hrs</button>
-                <button class="opt-btn" data-val="5+">5+ hrs</button>
-                <button class="opt-btn" data-val="fly">Open to flying</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Dog coming along?</label>
-              <div class="toggle-row">
-                <button class="toggle-btn active" id="dogToggle" data-val="yes">🐾 Yes, bring the pup</button>
-                <button class="toggle-btn" id="dogToggleNo" data-val="no">No dogs this time</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 2: Vibes -->
-          <div class="wizard-step" data-step="2">
-            <h3 class="step-title">Vibes & Priorities</h3>
-            <div class="field-group">
-              <label>Choose your vibes <span class="label-note">(pick all that apply)</span></label>
-              <div class="vibe-grid" id="vibeGrid">
-                <button class="vibe-btn active" data-val="hiking">🥾 Hiking</button>
-                <button class="vibe-btn" data-val="cozy-cabin">🏠 Cozy Cabin</button>
-                <button class="vibe-btn active" data-val="stargazing">🌌 Stargazing</button>
-                <button class="vibe-btn" data-val="artsy">🎨 Artsy</button>
-                <button class="vibe-btn active" data-val="food-scene">🍻 Food & Breweries</button>
-                <button class="vibe-btn" data-val="wine">🍷 Wine Country</button>
-                <button class="vibe-btn" data-val="hot-springs">♨️ Hot Springs</button>
-                <button class="vibe-btn" data-val="relaxing">😌 Relaxing</button>
-                <button class="vibe-btn" data-val="adventure">🧗 Adventure</button>
-                <button class="vibe-btn" data-val="museums">🏛️ Museums</button>
-                <button class="vibe-btn" data-val="scenic-drive">🚗 Scenic Drive</button>
-                <button class="vibe-btn" data-val="wellness">🧘 Wellness</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Must-dos <span class="label-note">(optional)</span></label>
-              <input type="text" class="text-input" id="mustDos" placeholder="e.g. stargazing, a good brewery, dog-friendly trails" />
-            </div>
-            <div class="field-group">
-              <label>Avoid list <span class="label-note">(optional)</span></label>
-              <input type="text" class="text-input" id="avoidList" placeholder="e.g. tourist traps, early mornings, cold camping" />
-            </div>
-            <div class="field-group">
-              <label>Scope</label>
-              <div class="btn-row" id="scope">
-                <button class="opt-btn active" data-val="local">🇺🇸 Domestic</button>
-                <button class="opt-btn" data-val="international">🌍 International</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 3: Group Personalities -->
-          <div class="wizard-step" data-step="3">
-            <h3 class="step-title">Group Personality Profiles</h3>
-            <p class="step-desc">Slide to describe your group's overall style. Trip Sprite balances the itinerary accordingly.</p>
-            <div class="slider-list">
-              <div class="slider-row">
-                <span class="slider-label-left">😴 Sleep In</span>
-                <div class="slider-wrap">
-                  <input type="range" min="0" max="100" value="30" class="vibe-slider" id="sl-wake" />
-                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
-                </div>
-                <span class="slider-label-right">🌅 Early Hike</span>
-              </div>
-              <div class="slider-row">
-                <span class="slider-label-left">🌲 Nature</span>
-                <div class="slider-wrap">
-                  <input type="range" min="0" max="100" value="60" class="vibe-slider" id="sl-nature" />
-                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
-                </div>
-                <span class="slider-label-right">🏙️ City</span>
-              </div>
-              <div class="slider-row">
-                <span class="slider-label-left">📋 Structured</span>
-                <div class="slider-wrap">
-                  <input type="range" min="0" max="100" value="45" class="vibe-slider" id="sl-plan" />
-                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
-                </div>
-                <span class="slider-label-right">🎲 Spontaneous</span>
-              </div>
-              <div class="slider-row">
-                <span class="slider-label-left">💰 Budget-Savvy</span>
-                <div class="slider-wrap">
-                  <input type="range" min="0" max="100" value="50" class="vibe-slider" id="sl-budget" />
-                  <div class="slider-ticks"><span></span><span></span><span></span><span></span><span></span></div>
-                </div>
-                <span class="slider-label-right">✨ Splurge</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 4: Transport & Lodging -->
-          <div class="wizard-step" data-step="4">
-            <h3 class="step-title">Getting There & Sleeping</h3>
-            <div class="field-group">
-              <label>Transportation</label>
-              <div class="btn-row wrap" id="transport">
-                <button class="opt-btn active" data-val="own-car">🚗 Own car</button>
-                <button class="opt-btn" data-val="rental">🚙 Rental car</button>
-                <button class="opt-btn" data-val="rv">🚌 RV / Campervan</button>
-                <button class="opt-btn" data-val="flight">✈️ Flights</button>
-                <button class="opt-btn" data-val="rideshare">🚕 Rideshare only</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Lodging vibe</label>
-              <div class="btn-row wrap" id="lodging">
-                <button class="opt-btn" data-val="airbnb">🏡 Airbnb</button>
-                <button class="opt-btn active" data-val="cabin">🌲 Cabin</button>
-                <button class="opt-btn" data-val="hotel">🏨 Hotel</button>
-                <button class="opt-btn" data-val="camping">⛺ Camping</button>
-                <button class="opt-btn" data-val="unique">🦙 Unique stay</button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Memory <span class="label-note">(personalize future trips)</span></label>
-              <div class="toggle-row">
-                <button class="toggle-btn active" id="memOn">✦ Memory On</button>
-                <button class="toggle-btn" id="memOff">Memory Off</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 5: Results (demo tiles) -->
-          <div class="wizard-step" data-step="5" id="resultsStep">
-            <h3 class="step-title">Your Matched Destinations</h3>
-            <p class="step-desc results-sub">Based on your inputs, here are 3 trip options curated for your vibe. <span class="ai-note">← In the full app, this is generated live by AI.</span></p>
-
-            <div class="flex-toggles">
-              <span class="toggle-label">Flex toggles:</span>
-              <button class="flex-btn active" id="flexDog">🐾 Dog On</button>
-              <button class="flex-btn" id="flexBudgetUp">💸 Budget Up</button>
-              <button class="flex-btn" id="flexRelax">😌 More Relaxing</button>
-              <button class="flex-btn" id="flexAdventure">🧗 More Adventure</button>
-              <button class="flex-btn" id="flexSwap">🔀 Swap Region</button>
-            </div>
-
-            <div class="dest-tiles" id="destTiles">
-
-              <div class="dest-tile selected" data-dest="moab">
-                <div class="tile-header">
-                  <div class="tile-rank">✦ Best Match</div>
-                  <div class="tile-dog">🐾 Dog-friendly</div>
-                </div>
-                <div class="tile-img moab-img"></div>
-                <div class="tile-body">
-                  <h4 class="tile-name">Moab, UT</h4>
-                  <div class="tile-meta">
-                    <span>🚗 3.5 hrs from Denver</span>
-                    <span>💸 ~$350–500/person</span>
-                  </div>
-                  <div class="tile-vibes">
-                    <span>Red Rock</span><span>Arches</span><span>Stargazing</span><span>Trails</span>
-                  </div>
-                  <p class="tile-highlight">⭐ Highlight: Arches National Park + Corona Arch sunset hike</p>
-                  <p class="tile-why">Why it fits: Stellar stargazing (Gold Tier dark sky), dog-allowed trails, and a growing brewery scene. Your budget lands comfortably in range for a dog-friendly cabin.</p>
-                  <div class="tile-links">
-                    <a href="https://maps.google.com?q=Moab,+Utah" target="_blank" class="tile-link">📍 Map</a>
-                    <a href="https://www.bringfido.com/lodging/city/moab_ut_us/" target="_blank" class="tile-link">🐾 BringFido</a>
-                    <a href="https://www.airbnb.com/s/Moab--UT/homes" target="_blank" class="tile-link">🏡 Airbnb</a>
-                    <a href="https://www.alltrails.com/us/utah/moab" target="_blank" class="tile-link">🥾 AllTrails</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="dest-tile" data-dest="salida">
-                <div class="tile-header">
-                  <div class="tile-rank">② Runner Up</div>
-                  <div class="tile-dog">🐾 Dog-friendly</div>
-                </div>
-                <div class="tile-img salida-img"></div>
-                <div class="tile-body">
-                  <h4 class="tile-name">Salida, CO</h4>
-                  <div class="tile-meta">
-                    <span>🚗 2.5 hrs from Denver</span>
-                    <span>💸 ~$250–400/person</span>
-                  </div>
-                  <div class="tile-vibes">
-                    <span>Hot Springs</span><span>Artsy</span><span>Hiking</span><span>Breweries</span>
-                  </div>
-                  <p class="tile-highlight">⭐ Highlight: Monarch Crest Trail + Salida Hot Springs Aquatic Center</p>
-                  <p class="tile-why">Why it fits: Budget-friendlier than Moab, with a walkable artsy downtown, dog-welcoming lodging, and that hot springs tick on your list.</p>
-                  <div class="tile-links">
-                    <a href="https://maps.google.com?q=Salida,+Colorado" target="_blank" class="tile-link">📍 Map</a>
-                    <a href="https://www.bringfido.com/lodging/city/salida_co_us/" target="_blank" class="tile-link">🐾 BringFido</a>
-                    <a href="https://www.airbnb.com/s/Salida--CO/homes" target="_blank" class="tile-link">🏡 Airbnb</a>
-                    <a href="https://www.alltrails.com/us/colorado/salida" target="_blank" class="tile-link">🥾 AllTrails</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="dest-tile" data-dest="pagosa">
-                <div class="tile-header">
-                  <div class="tile-rank">③ Wild Card</div>
-                  <div class="tile-dog">🐾 Dog-friendly</div>
-                </div>
-                <div class="tile-img pagosa-img"></div>
-                <div class="tile-body">
-                  <h4 class="tile-name">Pagosa Springs, CO</h4>
-                  <div class="tile-meta">
-                    <span>🚗 4 hrs from Denver</span>
-                    <span>💸 ~$300–550/person</span>
-                  </div>
-                  <div class="tile-vibes">
-                    <span>Hot Springs</span><span>Cozy</span><span>Scenic</span><span>Wellness</span>
-                  </div>
-                  <p class="tile-highlight">⭐ Highlight: Wading pools at The Springs Resort on the San Juan River</p>
-                  <p class="tile-why">Why it fits: World's deepest geothermal hot spring + incredible San Juan mountain views. A bit further but worth it if you want the full wellness experience.</p>
-                  <div class="tile-links">
-                    <a href="https://maps.google.com?q=Pagosa+Springs,+Colorado" target="_blank" class="tile-link">📍 Map</a>
-                    <a href="https://www.bringfido.com/lodging/city/pagosa_springs_co_us/" target="_blank" class="tile-link">🐾 BringFido</a>
-                    <a href="https://www.vrbo.com/vacation-rentals/usa/colorado/pagosa-springs" target="_blank" class="tile-link">🏠 VRBO</a>
-                    <a href="https://www.alltrails.com/us/colorado/pagosa-springs" target="_blank" class="tile-link">🥾 AllTrails</a>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <div class="results-cta">
-              <p>Pick a destination to see your full itinerary, budget breakdown, and packing list.</p>
-              <div class="pick-row">
-                <button class="pick-btn active-pick" onclick="selectDest('moab')">Moab →</button>
-                <button class="pick-btn" onclick="selectDest('salida')">Salida →</button>
-                <button class="pick-btn" onclick="selectDest('pagosa')">Pagosa →</button>
-              </div>
-            </div>
-
-            <!-- ITINERARY PANEL (shown after destination pick) -->
-            <div class="itinerary-panel" id="itineraryPanel">
-              <div class="itin-header">
-                <h3 id="itinTitle">Moab Weekend Itinerary</h3>
-                <div class="itin-meta" id="itinMeta">3 days · 2 people · 🐾 Dog-friendly · $$ Budget</div>
-              </div>
-
-              <div class="itin-tabs">
-                <button class="itin-tab active" data-tab="itinerary">📅 Itinerary</button>
-                <button class="itin-tab" data-tab="budget">💰 Budget</button>
-                <button class="itin-tab" data-tab="packing">🎒 Packing</button>
-                <button class="itin-tab" data-tab="share">📤 Share</button>
-              </div>
-
-              <div class="itin-tab-content active" id="tab-itinerary">
-                <div id="itinDays"></div>
-              </div>
-
-              <div class="itin-tab-content" id="tab-budget">
-                <div id="budgetBreakdown"></div>
-              </div>
-
-              <div class="itin-tab-content" id="tab-packing">
-                <div id="packingList"></div>
-              </div>
-
-              <div class="itin-tab-content" id="tab-share">
-                <div class="share-card" id="shareCard"></div>
-                <button class="copy-btn" id="copyShare">📋 Copy to clipboard</button>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Wizard Nav -->
-        <div class="wizard-nav">
-          <button class="nav-btn secondary" id="prevBtn" onclick="changeStep(-1)" style="display:none">← Back</button>
-          <div class="step-counter" id="stepCounter">Step 1 of 4</div>
-          <button class="nav-btn primary" id="nextBtn" onclick="changeStep(1)">Continue →</button>
-        </div>
-
+    <div class="field">
+      <label>Max drive time</label>
+      <div class="chip-group" id="drive-chips">
+        <div class="chip" data-val="1" onclick="pickChip('drive',this)">1 hr</div>
+        <div class="chip" data-val="2" onclick="pickChip('drive',this)">2 hrs</div>
+        <div class="chip on" data-val="3" onclick="pickChip('drive',this)">3 hrs</div>
+        <div class="chip" data-val="4" onclick="pickChip('drive',this)">4 hrs</div>
+        <div class="chip" data-val="5" onclick="pickChip('drive',this)">5+ hrs</div>
       </div>
     </div>
-  </section>
 
-  <!-- FEATURES CALLOUT -->
-  <section class="features-strip">
-    <div class="section-inner">
-      <div class="features-grid">
-        <div class="feature-item">
-          <div class="feature-icon">🔗</div>
-          <h4>Live booking links</h4>
-          <p>BringFido, Airbnb, and VRBO links generated for each recommended destination.</p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">🥾</div>
-          <h4>AllTrails integration</h4>
-          <p>Trail links with dog-friendly filters surfaced for every destination.</p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">🌤️</div>
-          <h4>Weather-aware alternates</h4>
-          <p>Every itinerary includes rainy-day and weather backup plans built in.</p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">💬</div>
-          <h4>Group-ready summaries</h4>
-          <p>One-tap group chat export with budget snapshot, activities, and map link.</p>
-        </div>
+    <div class="nav-btns">
+      <button class="btn-next" onclick="nextStep()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: VIBES -->
+  <div class="step" id="step2">
+    <div class="step-title">Vibes & priorities</div>
+    <div class="step-sub">Pick everything that sounds good — we'll balance the itinerary around it.</div>
+
+    <div class="field">
+      <label>Budget (per person, total trip)</label>
+      <div class="range-wrap">
+        <input type="range" min="100" max="1500" step="50" value="600" id="budget-slider" oninput="updateBudget(this.value)" />
+        <span class="range-val" id="budget-display">$600</span>
       </div>
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <span class="logo-sprite">✦</span> Trip Sprite
-      </div>
-      <p class="footer-tagline">Built with Claude AI · Part of an AI-powered portfolio</p>
-      <div class="footer-links">
-        <a href="https://github.com" target="_blank">GitHub ↗</a>
-        <a href="https://www.anthropic.com" target="_blank">Powered by Claude</a>
+    <div class="field">
+      <label>Activity vibes <span style="color:var(--muted);font-weight:300">(pick all that fit)</span></label>
+      <div class="chip-group" id="vibes-chips">
+        <div class="chip" data-val="hiking" onclick="toggleChip(this)">🥾 Hiking</div>
+        <div class="chip" data-val="stargazing" onclick="toggleChip(this)">🔭 Stargazing</div>
+        <div class="chip" data-val="hot springs" onclick="toggleChip(this)">♨️ Hot springs</div>
+        <div class="chip" data-val="breweries" onclick="toggleChip(this)">🍺 Breweries</div>
+        <div class="chip" data-val="skiing" onclick="toggleChip(this)">⛷️ Skiing</div>
+        <div class="chip" data-val="cozy cabin" onclick="toggleChip(this)">🏠 Cozy cabin</div>
+        <div class="chip" data-val="food scene" onclick="toggleChip(this)">🍽️ Food scene</div>
+        <div class="chip" data-val="art & culture" onclick="toggleChip(this)">🎨 Art & culture</div>
+        <div class="chip" data-val="river" onclick="toggleChip(this)">🏞️ River / water</div>
+        <div class="chip" data-val="mountain town" onclick="toggleChip(this)">🏔️ Mountain town</div>
+        <div class="chip" data-val="desert" onclick="toggleChip(this)">🌵 Desert / red rock</div>
+        <div class="chip" data-val="relaxing" onclick="toggleChip(this)">😌 Low-key & relaxing</div>
       </div>
     </div>
-  </footer>
 
-  <script src="data.js"></script>
-  <script src="wizard.js"></script>
+    <div class="field">
+      <label>Avoid list <span style="color:var(--muted);font-weight:300">(optional)</span></label>
+      <div class="chip-group" id="avoid-chips">
+        <div class="chip" data-val="crowds" onclick="toggleChip(this)">🚫 Big crowds</div>
+        <div class="chip" data-val="cold camping" onclick="toggleChip(this)">❄️ Cold camping</div>
+        <div class="chip" data-val="early mornings" onclick="toggleChip(this)">🌅 Early mornings</div>
+        <div class="chip" data-val="tourist traps" onclick="toggleChip(this)">🎡 Tourist traps</div>
+        <div class="chip" data-val="long hikes" onclick="toggleChip(this)">😮‍💨 Long strenuous hikes</div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevStep()">← Back</button>
+      <button class="btn-next" onclick="nextStep()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: GROUP -->
+  <div class="step" id="step3">
+    <div class="step-title">Group personality</div>
+    <div class="step-sub">These sliders help Trip Sprite balance your itinerary for everyone.</div>
+
+    <div class="field">
+      <label>Morning style</label>
+      <div class="range-wrap">
+        <span style="font-size:12px;color:var(--muted);min-width:70px">Sleep in 😴</span>
+        <input type="range" min="0" max="10" value="4" id="morning-slider" />
+        <span style="font-size:12px;color:var(--muted);min-width:70px;text-align:right">Early hike 🌄</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Setting preference</label>
+      <div class="range-wrap">
+        <span style="font-size:12px;color:var(--muted);min-width:70px">City 🏙️</span>
+        <input type="range" min="0" max="10" value="6" id="nature-slider" />
+        <span style="font-size:12px;color:var(--muted);min-width:70px;text-align:right">Nature 🌲</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Planning style</label>
+      <div class="range-wrap">
+        <span style="font-size:12px;color:var(--muted);min-width:70px">Structured 📋</span>
+        <input type="range" min="0" max="10" value="5" id="structure-slider" />
+        <span style="font-size:12px;color:var(--muted);min-width:70px;text-align:right">Spontaneous 🎲</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Dogs coming?</label>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Bringing the dog(s)</div>
+          <div class="toggle-sub">Filters for dog-friendly trails, lodging & patios</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="dog-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevStep()">← Back</button>
+      <button class="btn-next" onclick="nextStep()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: LODGING & TRANSPORT -->
+  <div class="step" id="step4">
+    <div class="step-title">How you're traveling</div>
+    <div class="step-sub">This helps us size the budget and tailor activity timing.</div>
+
+    <div class="field">
+      <label>Getting there</label>
+      <div class="chip-group" id="transport-chips">
+        <div class="chip on" data-val="own car" onclick="pickChip('transport',this)">🚗 Own car</div>
+        <div class="chip" data-val="rental" onclick="pickChip('transport',this)">🚙 Rental car</div>
+        <div class="chip" data-val="rv" onclick="pickChip('transport',this)">🚐 RV / van</div>
+        <div class="chip" data-val="rideshare" onclick="pickChip('transport',this)">📱 Rideshare only</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Lodging preference</label>
+      <div class="chip-group" id="lodging-chips">
+        <div class="chip on" data-val="airbnb" onclick="pickChip('lodging',this)">🏡 Airbnb / VRBO</div>
+        <div class="chip" data-val="cabin" onclick="pickChip('lodging',this)">🪵 Cabin / glamping</div>
+        <div class="chip" data-val="hotel" onclick="pickChip('lodging',this)">🏨 Hotel</div>
+        <div class="chip" data-val="camping" onclick="pickChip('lodging',this)">⛺ Camping</div>
+        <div class="chip" data-val="unique" onclick="pickChip('lodging',this)">✨ Unique stay</div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevStep()">← Back</button>
+      <button class="btn-next" onclick="showResults()">Show My Trips →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+  <div class="results-header">
+    <h2 id="results-headline">Your matched destinations</h2>
+    <p id="results-sub">Based on your inputs — tap a destination to see the full plan</p>
+  </div>
+
+  <div class="tile-grid" id="tile-grid"></div>
+
+  <div id="itinerary-panel">
+    <div class="itin-card">
+      <div class="itin-tabs">
+        <button class="itin-tab active" onclick="switchTab('plan',this)">📅 Itinerary</button>
+        <button class="itin-tab" onclick="switchTab('budget',this)">💸 Budget</button>
+        <button class="itin-tab" onclick="switchTab('pack',this)">🎒 Packing</button>
+        <button class="itin-tab" onclick="switchTab('book',this)">🔗 Book</button>
+      </div>
+      <div class="itin-body">
+        <div class="itin-pane active" id="pane-plan"></div>
+        <div class="itin-pane" id="pane-budget"></div>
+        <div class="itin-pane" id="pane-pack"></div>
+        <div class="itin-pane" id="pane-book"></div>
+      </div>
+    </div>
+
+    <div class="flex-section">
+      <h3>Flex toggles</h3>
+      <div class="flex-chips" id="flex-chips"></div>
+    </div>
+
+    <div id="share-section">
+      <h3 style="font-family:var(--font-display);font-size:17px;margin-bottom:10px">Share with your group</h3>
+      <div class="share-card" id="share-text"></div>
+      <button class="copy-btn" id="copy-btn" onclick="copyShare()">Copy to clipboard</button>
+      <button class="restart-btn" onclick="restart()">Start over</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Trip Sprite · Built for weekend adventurers from Denver 🌄 ·
+  Data sources: AllTrails, BringFido, Airbnb, VRBO
+</footer>
+
+<script>
+// =============================================
+// STATE
+// =============================================
+const state = {
+  step: 1,
+  totalSteps: 4,
+  inputs: {
+    days: 1, group: 'solo', startCity: 'Denver, CO', drive: 3,
+    budget: 600, vibes: [], avoid: [], morningStyle: 4, natureStyle: 6,
+    structureStyle: 5, dog: false, transport: 'own car', lodging: 'airbnb'
+  },
+  selectedTile: null
+};
+
+// =============================================
+// DESTINATION DATABASE
+// Each destination has tags for matching
+// =============================================
+const DESTINATIONS = [
+  {
+    id: 'salida',
+    name: 'Salida, CO',
+    drive: 2.5,
+    tags: ['hiking','hot springs','mountain town','breweries','river','relaxing'],
+    avoidTags: [],
+    dog: true,
+    budgetMin: 250, budgetMax: 900,
+    days: [1,2,3,4,5],
+    vibe: 'Artsy mountain town with stellar hot springs and BLM hiking',
+    highlight: '♨️ Soak at Salida Hot Springs after a Monarch Crest hike',
+    why: 'The Arkansas River runs right through town, trails are dog-friendly, and Fri/Sat nights at the taprooms are low-key legendary.',
+    mapLink: 'https://maps.google.com/?q=Salida,+Colorado',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Salida%2C+CO',
+    airbnb: 'https://www.airbnb.com/s/Salida--Colorado/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/colorado/salida',
+    alltrails: 'https://www.alltrails.com/parks/us/colorado/salida',
+    itinerary: {
+      1: [
+        {day:'Day 1',acts:[{t:'10am',a:'Arrive, grab coffee at Aroma Roasting'},{t:'12pm',a:'Hike Methodist Mountain (dog-friendly, 3.5mi out-and-back)'},{t:'4pm',a:'Salida Hot Springs Aquatic Center soak'},{t:'7pm',a:'Dinner at Boathouse Cantina on the river patio'}]}
+      ],
+      2: [
+        {day:'Day 1',acts:[{t:'9am',a:'Drive to Salida (2.5 hrs)'},{t:'12pm',a:'Lunch at Moonlight Pizza, walk the historic district'},{t:'3pm',a:'Riverside trail along Arkansas with dogs'},{t:'6pm',a:'Check in to Airbnb / cabin'},{t:'8pm',a:'Sunset drinks on the deck'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Methodist Mountain hike (9mi, stunning 360° views)'},{t:'1pm',a:'Salida Hot Springs soak — post-hike recovery'},{t:'3pm',a:'Browse galleries on F Street'},{t:'6pm',a:'Dinner at Amicas Micro Brewery'},{t:'9am',a:'Drive home (2.5 hrs)'}]}
+      ],
+      3: [
+        {day:'Day 1',acts:[{t:'9am',a:'Drive to Salida (2.5 hrs)'},{t:'12pm',a:'Lunch + explore F Street galleries'},{t:'3pm',a:'Easy Arkansas River trail walk with dogs'},{t:'7pm',a:'Dinner at Boathouse Cantina, river patio'}]},
+        {day:'Day 2',acts:[{t:'8am',a:'Methodist Mountain hike — summit views'},{t:'1pm',a:'Hot Springs Aquatic Center soak'},{t:'4pm',a:'Drive to Browns Canyon for afternoon explore'},{t:'7pm',a:'Brewpub dinner at Amicas'}]},
+        {day:'Day 3',acts:[{t:'9am',a:'Morning coffee + farmers market (Sat/Sun)'},{t:'11am',a:'Raft trip on the Arkansas (half-day, dogs ok on some outfitters)'},{t:'3pm',a:'Pack up, drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$40–60',
+      lodging: '$120–280/night (Airbnb)',
+      food: '$80–130',
+      activities: '$25–80',
+      hotSprings: '$12–18/person',
+      note: 'Budget stretches well here — Salida is still off the radar enough that prices are real-human.'
+    },
+    pack: ['Microspikes (shoulder season)', 'Swimsuit + towel (hot springs)', 'Dog water bowl + leash', 'River sandals', 'Layers — mornings are cool'],
+    share: (d, ppl, budget) => `📍 Salida, CO Weekend\n🐾 Dog-friendly | 🚗 ~2.5 hrs from Denver\n\n✨ Highlights:\n• Monarch Crest / Methodist Mountain hike\n• Salida Hot Springs soak\n• Arkansas River walks\n• Artsy brewpub scene on F Street\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Salida--Colorado\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'moab',
+    name: 'Moab, UT',
+    drive: 4,
+    tags: ['hiking','desert','stargazing','mountain biking','river'],
+    avoidTags: ['crowds'],
+    dog: true,
+    budgetMin: 300, budgetMax: 1200,
+    days: [2,3,4,5],
+    vibe: 'Red rock paradise — BLM land all around, world-class trails, epic skies',
+    highlight: '🌵 Sunrise at Dead Horse Point — no crowds, otherworldly views',
+    why: 'BLM trails are wide open for dogs. Spring and fall temps are perfect. The dark sky is genuinely one of the best in the country.',
+    mapLink: 'https://maps.google.com/?q=Moab,+Utah',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Moab%2C+UT',
+    airbnb: 'https://www.airbnb.com/s/Moab--Utah/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/utah/moab',
+    alltrails: 'https://www.alltrails.com/parks/us/utah/moab',
+    itinerary: {
+      2: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver — arrive ~10am'},{t:'11am',a:'Corona Arch hike (3.3mi, dog-friendly, stunning)'},{t:'2pm',a:'Lunch at Moab Brewery patio'},{t:'4pm',a:'Sunset at Dead Horse Point (drive up, short walk)'},{t:'8pm',a:'Stargazing on BLM land near town'}]},
+        {day:'Day 2',acts:[{t:'8am',a:'Morning hike — Fisher Towers or Negro Bill Canyon'},{t:'12pm',a:'Pack up, lunch before drive'},{t:'1pm',a:'Drive home (~4 hrs)'}]}
+      ],
+      3: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver'},{t:'10am',a:'Corona Arch hike'},{t:'1pm',a:'Check in, lunch in town'},{t:'4pm',a:'Dead Horse Point sunset'},{t:'8pm',a:'Stargazing on BLM land'}]},
+        {day:'Day 2',acts:[{t:'8am',a:'Fisher Towers trail (4.4mi, dramatic red rock spires)'},{t:'1pm',a:'Lunch + afternoon float on the Colorado'},{t:'5pm',a:'Relax / explore Main Street'}]},
+        {day:'Day 3',acts:[{t:'8am',a:'Morning walk at Arches vicinity (Delicate Arch is no-dog, but Park Ave trailhead works)'},{t:'11am',a:'Drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$70–90',
+      lodging: '$130–300/night',
+      food: '$90–150',
+      activities: '$30–80',
+      note: 'Budget: Moab has crept up in price. BLM camping is free (first-come, $0–20). Avoid holiday weekends.'
+    },
+    pack: ['Sun hat + SPF 50', 'Extra water (2L/person/day)', 'Dog booties (hot pavement)', 'Headlamp for stargazing', 'Sandals + hiking boots'],
+    share: (d, ppl, budget) => `📍 Moab, UT Weekend\n🐾 Dog-friendly BLM trails | 🚗 ~4 hrs from Denver\n\n✨ Highlights:\n• Corona Arch hike\n• Dead Horse Point sunset\n• Stargazing on BLM land\n• Colorado River float\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Moab--Utah\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'steamboat',
+    name: 'Steamboat Springs, CO',
+    drive: 3,
+    tags: ['skiing','hot springs','mountain town','hiking','cozy cabin','relaxing'],
+    avoidTags: [],
+    dog: true,
+    budgetMin: 400, budgetMax: 1500,
+    days: [2,3,4,5],
+    vibe: 'Cowboy ski town — hot springs, powder days, and zero pretension',
+    highlight: '⛷️ Ski Steamboat then soak at Strawberry Park Hot Springs at night',
+    why: 'Strawberry Park is one of the most magical hot springs in Colorado, especially after dark. The town has real western character and isn\'t trying too hard.',
+    mapLink: 'https://maps.google.com/?q=Steamboat+Springs,+Colorado',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Steamboat+Springs%2C+CO',
+    airbnb: 'https://www.airbnb.com/s/Steamboat-Springs--Colorado/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/colorado/steamboat-springs',
+    alltrails: 'https://www.alltrails.com/us/colorado/steamboat-springs',
+    itinerary: {
+      2: [
+        {day:'Day 1',acts:[{t:'7am',a:'Depart Denver (3 hrs)'},{t:'10am',a:'First chair at Steamboat Resort'},{t:'4pm',a:'Après at The Tugboat'},{t:'7pm',a:'Dinner at Café Diva'},{t:'9pm',a:'Strawberry Park Hot Springs (BYOB, adults-only after dark)'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Ski morning laps or snowshoe with dogs'},{t:'12pm',a:'Lunch in town, pack up'},{t:'2pm',a:'Drive home'}]}
+      ],
+      3: [
+        {day:'Day 1',acts:[{t:'7am',a:'Drive to Steamboat'},{t:'10am',a:'Ski / snowboard all day'},{t:'5pm',a:'Check in + relax'},{t:'8pm',a:'Strawberry Park Hot Springs, night session'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Ski resort or backcountry day'},{t:'4pm',a:'Downtown stroll + Yampa River walk with dogs'},{t:'7pm',a:'Dinner at Laundry restaurant'}]},
+        {day:'Day 3',acts:[{t:'9am',a:'Coffee + morning ski or hike'},{t:'12pm',a:'Pack up, drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$50–65',
+      lodging: '$160–350/night (ski season)',
+      food: '$120–200',
+      activities: '$100–200 (lift tickets)',
+      hotSprings: '$20–25/person',
+      note: 'Book lift tickets online in advance — walk-up prices are brutal. Strawberry Park charges $15–20/person.'
+    },
+    pack: ['Ski gear / rental budget', 'Swimsuit + towel (hot springs)', 'Warm layers for hot springs parking lot', 'Dog booties (cold pavement)', 'Headlamp'],
+    share: (d, ppl, budget) => `📍 Steamboat Springs, CO Weekend\n🐾 Dog-friendly | 🚗 ~3 hrs from Denver\n\n✨ Highlights:\n• Steamboat Resort ski day\n• Strawberry Park Hot Springs (night session)\n• Après at The Tugboat\n• Yampa River dog walk\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Steamboat-Springs--Colorado\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'buena-vista',
+    name: 'Buena Vista, CO',
+    drive: 2,
+    tags: ['hiking','hot springs','river','mountain town','relaxing','stargazing','breweries'],
+    avoidTags: [],
+    dog: true,
+    budgetMin: 200, budgetMax: 800,
+    days: [1,2,3],
+    vibe: 'Outdoorsy, chill, and absurdly pretty — BV is the sweet spot',
+    highlight: '🏔️ 14er views from Cottonwood Pass + afternoon hot spring soak',
+    why: 'Two hours from Denver and you feel a world away. The Arkansas River, Collegiate Peaks, and Mt Princeton Hot Springs are all within 20 minutes of each other.',
+    mapLink: 'https://maps.google.com/?q=Buena+Vista,+Colorado',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Buena+Vista%2C+CO',
+    airbnb: 'https://www.airbnb.com/s/Buena-Vista--Colorado/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/colorado/buena-vista',
+    alltrails: 'https://www.alltrails.com/us/colorado/buena-vista',
+    itinerary: {
+      1: [
+        {day:'Day 1',acts:[{t:'7am',a:'Depart Denver'},{t:'9am',a:'Arrive BV — grab coffee at Eddyline Brewery'},{t:'10am',a:'Hike Cottonwood Lake trail with dogs (easy, gorgeous)'},{t:'2pm',a:'Mt Princeton Hot Springs soak'},{t:'5pm',a:'Drive home'}]}
+      ],
+      2: [
+        {day:'Day 1',acts:[{t:'8am',a:'Drive to Buena Vista (2 hrs)'},{t:'11am',a:'Hike Cottonwood Pass Road or Brown\'s Creek trail'},{t:'2pm',a:'Lunch at Eddyline Riverside Pub'},{t:'5pm',a:'Mt Princeton Hot Springs'},{t:'8pm',a:'Stargazing — no light pollution out here'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Morning kayak or SUP on the Ark'},{t:'12pm',a:'Brunch in town'},{t:'2pm',a:'Drive home'}]}
+      ],
+      3: [
+        {day:'Day 1',acts:[{t:'8am',a:'Drive to BV'},{t:'11am',a:'Cottonwood Lake hike with dogs'},{t:'3pm',a:'Check in + settle'},{t:'6pm',a:'Dinner at Eddyline Brewery'}]},
+        {day:'Day 2',acts:[{t:'8am',a:'Strenuous hike option: Browns Creek or Ptarmigan Lake'},{t:'1pm',a:'Lunch, rest up'},{t:'4pm',a:'Mt Princeton Hot Springs soak'},{t:'8pm',a:'Campfire / stargazing'}]},
+        {day:'Day 3',acts:[{t:'9am',a:'Morning coffee + walk downtown'},{t:'11am',a:'Kayak / float on Arkansas'},{t:'2pm',a:'Drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$35–50',
+      lodging: '$100–220/night (Airbnb or cabin)',
+      food: '$70–120',
+      activities: '$20–60',
+      hotSprings: '$25–45/person (Mt Princeton)',
+      note: 'Best value in the Rockies. Book lodging 3–4 weeks out in summer — it fills fast.'
+    },
+    pack: ['Swimsuit + towel', 'Dog leash + collapsible bowl', 'Layers (mornings cold year-round)', 'River sandals', 'Sunscreen'],
+    share: (d, ppl, budget) => `📍 Buena Vista, CO Weekend\n🐾 Dog-friendly | 🚗 ~2 hrs from Denver\n\n✨ Highlights:\n• Cottonwood Lake or Browns Creek hike\n• Mt Princeton Hot Springs\n• Arkansas River kayak\n• Eddyline Brewery riverside patio\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Buena-Vista--Colorado\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'taos',
+    name: 'Taos, NM',
+    drive: 4.5,
+    tags: ['art & culture','hiking','food scene','mountain town','desert','relaxing'],
+    avoidTags: [],
+    dog: true,
+    budgetMin: 350, budgetMax: 1100,
+    days: [2,3,4,5],
+    vibe: 'High-desert art mecca — adobe history, green chile everything, and soul',
+    highlight: '🎨 Wander the Taos Pueblo, then green chile at Orlando\'s',
+    why: 'Taos hits differently — it\'s spiritual, artsy, and genuinely delicious. Rio Grande Gorge is 10 minutes away and dog-friendly. Great base for offbeat exploring.',
+    mapLink: 'https://maps.google.com/?q=Taos,+New+Mexico',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Taos%2C+NM',
+    airbnb: 'https://www.airbnb.com/s/Taos--New-Mexico/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/new-mexico/taos',
+    alltrails: 'https://www.alltrails.com/us/new-mexico/taos',
+    itinerary: {
+      2: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver (4.5 hrs)'},{t:'11am',a:'Rio Grande Gorge Bridge hike + dog walk on rim trail'},{t:'2pm',a:'Check in, explore Taos Plaza'},{t:'6pm',a:'Dinner: Orlando\'s (best green chile in NM)'},{t:'8pm',a:'Gallery walk downtown'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Taos Pueblo visit (dogs ok on grounds)'},{t:'12pm',a:'Lunch at El Gamal'},{t:'2pm',a:'Drive home via Enchanted Circle scenic byway (+1 hr but stunning)'}]}
+      ],
+      3: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver'},{t:'11am',a:'Rio Grande Gorge hike'},{t:'3pm',a:'Explore Taos Plaza + galleries'},{t:'7pm',a:'Green chile dinner at Orlando\'s'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Taos Pueblo + morning walk'},{t:'12pm',a:'Lunch + Kit Carson Park dog walk'},{t:'3pm',a:'Drive Enchanted Circle: Angel Fire, Eagle Nest Lake'},{t:'7pm',a:'Dinner at The Love Apple'}]},
+        {day:'Day 3',acts:[{t:'9am',a:'Morning coffee + Taos art galleries'},{t:'12pm',a:'Last green chile fix'},{t:'1pm',a:'Drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$65–85',
+      lodging: '$120–280/night (adobe Airbnbs)',
+      food: '$90–160',
+      activities: '$20–50',
+      note: 'Taos Pueblo charges $25/person + $10 photo fee. Worth it. Watch for pueblo closure days.'
+    },
+    pack: ['Sun hat (high elevation + intense NM sun)', 'Dog leash + water', 'Layers (cool nights year-round)', 'Camera (it\'s ridiculously photogenic)', 'Cash for Pueblo and market vendors'],
+    share: (d, ppl, budget) => `📍 Taos, NM Weekend\n🐾 Dog-friendly | 🚗 ~4.5 hrs from Denver\n\n✨ Highlights:\n• Rio Grande Gorge hike\n• Taos Pueblo\n• Green chile at Orlando\'s\n• Enchanted Circle scenic drive\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Taos--New-Mexico\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'durango',
+    name: 'Durango, CO',
+    drive: 5.5,
+    tags: ['hiking','mountain town','breweries','food scene','river','art & culture'],
+    avoidTags: [],
+    dog: true,
+    budgetMin: 400, budgetMax: 1200,
+    days: [3,4,5],
+    vibe: 'Colorado\'s best mountain town — historic, outdoorsy, and has a proper food scene',
+    highlight: '🚂 Durango-Silverton Narrow Gauge Railroad + Animas River dog walk',
+    why: 'The combination of world-class trails, a real downtown, the Animas River, and proximity to Mesa Verde makes Durango worth the drive.',
+    mapLink: 'https://maps.google.com/?q=Durango,+Colorado',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Durango%2C+CO',
+    airbnb: 'https://www.airbnb.com/s/Durango--Colorado/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/colorado/durango',
+    alltrails: 'https://www.alltrails.com/us/colorado/durango',
+    itinerary: {
+      3: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver (5.5 hrs)'},{t:'12pm',a:'Arrive, lunch at Steamworks Brewing'},{t:'3pm',a:'Animas River Trail walk with dogs'},{t:'7pm',a:'Dinner at Ore House'}]},
+        {day:'Day 2',acts:[{t:'8am',a:'Narrow Gauge Railroad (dogs allowed in baggage car!)'},{t:'5pm',a:'Return to Durango, unwind'},{t:'7pm',a:'Dinner at Eno Wine Bar'}]},
+        {day:'Day 3',acts:[{t:'8am',a:'Morning hike: Horse Gulch trail system (dog-friendly)'},{t:'12pm',a:'Brunch + pack up'},{t:'2pm',a:'Drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$90–110',
+      lodging: '$140–300/night',
+      food: '$120–200',
+      activities: '$60–150 (train tickets)',
+      note: 'Train tickets sell out weeks in advance — book ahead. Dog space is limited in the baggage car; call D&SNG to confirm.'
+    },
+    pack: ['Layers (Durango has wild shoulder season weather)', 'Dog items for train', 'Good hiking boots', 'Camera', 'Brewpub appetite'],
+    share: (d, ppl, budget) => `📍 Durango, CO Weekend\n🐾 Dog-friendly | 🚗 ~5.5 hrs from Denver\n\n✨ Highlights:\n• Durango-Silverton Narrow Gauge Railroad\n• Animas River dog walk\n• Horse Gulch trail system\n• Historic downtown + Steamworks Brewing\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Durango--Colorado\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'estes',
+    name: 'Estes Park, CO',
+    drive: 1.5,
+    tags: ['hiking','mountain town','relaxing','art & culture','cozy cabin'],
+    avoidTags: ['crowds'],
+    dog: true,
+    budgetMin: 200, budgetMax: 700,
+    days: [1,2,3],
+    vibe: 'Gateway to RMNP — but the BLM trails and town are underrated on their own',
+    highlight: '🦌 Elk herds at dusk + hike at Hermit Park (fully dog-friendly)',
+    why: 'If you want mountains without a 4-hour haul, Estes is the move. Hermit Park Open Space is all dogs-welcome, and the Stanley Hotel is genuinely spooky.',
+    mapLink: 'https://maps.google.com/?q=Estes+Park,+Colorado',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Estes+Park%2C+CO',
+    airbnb: 'https://www.airbnb.com/s/Estes-Park--Colorado/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/colorado/estes-park',
+    alltrails: 'https://www.alltrails.com/us/colorado/estes-park',
+    itinerary: {
+      1: [
+        {day:'Day 1',acts:[{t:'8am',a:'Drive up (1.5 hrs via Hwy 36)'},{t:'10am',a:'Hermit Park Open Space hike with dogs'},{t:'1pm',a:'Lunch at Notchtop Bakery'},{t:'3pm',a:'Estes village walk + elk watching'},{t:'6pm',a:'Drive home'}]}
+      ],
+      2: [
+        {day:'Day 1',acts:[{t:'9am',a:'Drive to Estes Park'},{t:'11am',a:'Hermit Park trails (dog-friendly, varied difficulty)'},{t:'2pm',a:'Lunch + explore downtown'},{t:'5pm',a:'Elk herd at dusk near Lake Estes'},{t:'8pm',a:'Dinner at Twin Owls Steakhouse'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Coffee + morning walk'},{t:'11am',a:'RMNP Bear Lake (no dogs on trails, but great viewpoint)'},{t:'1pm',a:'Drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$20–30',
+      lodging: '$120–250/night (cabin or Airbnb)',
+      food: '$70–120',
+      activities: '$10–40',
+      note: 'RMNP timed entry required if visiting the park ($2 + entry fee). Hermit Park: $9/day/vehicle.'
+    },
+    pack: ['Dog leash + bags (required in Hermit Park)', 'Layers (always)', 'Binoculars for elk/wildlife', 'Rain jacket (afternoon storms summer)'],
+    share: (d, ppl, budget) => `📍 Estes Park, CO Weekend\n🐾 Dog-friendly (Hermit Park!) | 🚗 ~1.5 hrs from Denver\n\n✨ Highlights:\n• Hermit Park Open Space hike\n• Elk herd at dusk at Lake Estes\n• Rocky Mountain National Park viewpoints\n• Notchtop Bakery breakfast\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Estes-Park--Colorado\n🐾 Dog stays: bringfido.com`
+  },
+  {
+    id: 'ouray',
+    name: 'Ouray, CO',
+    drive: 5,
+    tags: ['hot springs','hiking','mountain town','stargazing','relaxing'],
+    avoidTags: [],
+    dog: true,
+    budgetMin: 350, budgetMax: 1000,
+    days: [2,3,4,5],
+    vibe: 'Switzerland of America — ice climbing, hot springs, and absurd canyon views',
+    highlight: '♨️ Ouray Hot Springs + hike the Perimeter Trail above town',
+    why: 'Ouray sits in a box canyon and somehow gets more dramatic every direction you look. The Perimeter Trail is dog-friendly and gives you views no overlook can match.',
+    mapLink: 'https://maps.google.com/?q=Ouray,+Colorado',
+    bringfido: 'https://www.bringfido.com/attraction/?destination=Ouray%2C+CO',
+    airbnb: 'https://www.airbnb.com/s/Ouray--Colorado/homes',
+    vrbo: 'https://www.vrbo.com/vacation-rentals/usa/colorado/ouray',
+    alltrails: 'https://www.alltrails.com/us/colorado/ouray',
+    itinerary: {
+      2: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver (5 hrs)'},{t:'11am',a:'Arrive, lunch at Ouray Brewing'},{t:'2pm',a:'Perimeter Trail hike with dogs (5.8mi loop, jaw-dropping)'},{t:'5pm',a:'Ouray Hot Springs Pool'},{t:'8pm',a:'Dinner + stargaze from town'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Box Canyon Falls (dogs allowed, short walk)'},{t:'11am',a:'Drive Million Dollar Highway to Silverton (bring dogs)'},{t:'2pm',a:'Drive home via Telluride or direct'}]}
+      ],
+      3: [
+        {day:'Day 1',acts:[{t:'6am',a:'Depart Denver'},{t:'11am',a:'Arrive + Perimeter Trail hike'},{t:'5pm',a:'Hot Springs soak'},{t:'8pm',a:'Dinner at Buen Tiempo'}]},
+        {day:'Day 2',acts:[{t:'9am',a:'Box Canyon Falls morning walk'},{t:'11am',a:'Drive to Silverton via Million Dollar Highway'},{t:'2pm',a:'Explore Silverton, lunch'},{t:'5pm',a:'Return to Ouray, relax'}]},
+        {day:'Day 3',acts:[{t:'9am',a:'Morning hot springs (they open early)'},{t:'11am',a:'Drive home'}]}
+      ]
+    },
+    budget: {
+      gas: '$85–100',
+      lodging: '$130–280/night',
+      food: '$90–150',
+      activities: '$20–50',
+      hotSprings: '$18–22/person',
+      note: 'Ouray is worth every mile. Book lodging early — the town has limited options and fills up on weekends.'
+    },
+    pack: ['Microspikes (Perimeter Trail has icy sections in winter/spring)', 'Swimsuit + towel', 'Dog paw protection', 'Layers (elevation ~7,700ft)', 'Camera'],
+    share: (d, ppl, budget) => `📍 Ouray, CO Weekend\n🐾 Dog-friendly | 🚗 ~5 hrs from Denver\n\n✨ Highlights:\n• Perimeter Trail hike (box canyon views)\n• Ouray Hot Springs\n• Million Dollar Highway to Silverton\n• Box Canyon Falls\n\n💸 Est. ~$${budget}/person | 👥 ${ppl}\n\n🏡 Airbnb: airbnb.com/s/Ouray--Colorado\n🐾 Dog stays: bringfido.com`
+  }
+];
+
+// =============================================
+// WIZARD LOGIC
+// =============================================
+function startWizard() {
+  document.getElementById('top').style.display = 'none';
+  document.getElementById('wizard').style.display = 'block';
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress() {
+  const pct = (state.step / state.totalSteps) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+function nextStep() {
+  if (state.step < state.totalSteps) {
+    document.getElementById('step' + state.step).classList.remove('active');
+    state.step++;
+    document.getElementById('step' + state.step).classList.add('active');
+    updateProgress();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+function prevStep() {
+  if (state.step > 1) {
+    document.getElementById('step' + state.step).classList.remove('active');
+    state.step--;
+    document.getElementById('step' + state.step).classList.add('active');
+    updateProgress();
+  }
+}
+
+function pickChip(group, el) {
+  const container = el.closest('.chip-group');
+  container.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  state.inputs[group] = el.dataset.val;
+}
+
+function toggleChip(el) {
+  el.classList.toggle('on');
+}
+
+function updateBudget(val) {
+  document.getElementById('budget-display').textContent = '$' + val;
+  state.inputs.budget = parseInt(val);
+}
+
+// =============================================
+// MATCHING ALGORITHM
+// =============================================
+function matchDestinations() {
+  const inp = state.inputs;
+  const budget = parseInt(document.getElementById('budget-slider').value);
+  const drive = parseInt(inp.drive) || 3;
+  const days = parseInt(inp.days) || 2;
+  const dog = document.getElementById('dog-toggle').checked;
+
+  // Collect selected vibes
+  const vibes = [...document.querySelectorAll('#vibes-chips .chip.on')].map(c => c.dataset.val);
+  const avoid = [...document.querySelectorAll('#avoid-chips .chip.on')].map(c => c.dataset.val);
+
+  state.inputs.vibes = vibes;
+  state.inputs.avoid = avoid;
+  state.inputs.dog = dog;
+  state.inputs.budget = budget;
+  state.inputs.drive = drive;
+  state.inputs.days = days;
+  state.inputs.morningStyle = parseInt(document.getElementById('morning-slider').value);
+  state.inputs.natureStyle = parseInt(document.getElementById('nature-slider').value);
+  state.inputs.structureStyle = parseInt(document.getElementById('structure-slider').value);
+
+  let scored = DESTINATIONS.map(dest => {
+    let score = 0;
+
+    // Drive time match
+    if (dest.drive <= drive + 0.5) score += 20;
+    if (dest.drive <= drive - 1) score += 5; // bonus for being well within range
+
+    // Budget match
+    if (budget >= dest.budgetMin && budget <= dest.budgetMax * 1.2) score += 15;
+    if (budget < dest.budgetMin) score -= 10;
+
+    // Days match
+    if (dest.days.includes(days) || dest.days.includes(Math.min(days, Math.max(...dest.days)))) score += 10;
+
+    // Dog filter — hard filter
+    if (dog && !dest.dog) return null;
+
+    // Vibe match
+    vibes.forEach(v => { if (dest.tags.includes(v)) score += 12; });
+
+    // Avoid penalties
+    avoid.forEach(a => { if (dest.avoidTags && dest.avoidTags.includes(a)) score -= 15; });
+
+    // Crowd avoidance
+    if (avoid.includes('crowds') && (dest.id === 'estes' || dest.id === 'moab')) score -= 10;
+
+    // Nature vs city slider
+    const natureScore = state.inputs.natureStyle;
+    const naturalDest = ['salida','buena-vista','ouray','moab'].includes(dest.id);
+    if (natureScore >= 7 && naturalDest) score += 8;
+    if (natureScore <= 3 && ['taos','durango'].includes(dest.id)) score += 8;
+
+    return { dest, score };
+  }).filter(Boolean);
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 4).map(s => s.dest);
+}
+
+// =============================================
+// SHOW RESULTS
+// =============================================
+function showResults() {
+  const matched = matchDestinations();
+  document.getElementById('wizard').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  const dog = state.inputs.dog;
+  const drive = state.inputs.drive;
+  const vibes = state.inputs.vibes;
+
+  document.getElementById('results-headline').textContent = `${matched.length} trips matched for you`;
+  document.getElementById('results-sub').textContent =
+    `${drive}hr drive max · ${state.inputs.days} day${state.inputs.days > 1 ? 's' : ''} · ${dog ? '🐾 dog-friendly · ' : ''}$${state.inputs.budget}/person est.`;
+
+  const grid = document.getElementById('tile-grid');
+  grid.innerHTML = '';
+
+  matched.forEach((dest, i) => {
+    const vibeMatches = dest.tags.filter(t => vibes.includes(t));
+    const tagHtml = vibeMatches.map(v => `<span class="tag vibe">${v}</span>`).join('');
+    const dogTag = dest.dog ? '<span class="tag dog">🐾 dog-friendly</span>' : '';
+
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.id = 'tile-' + dest.id;
+    tile.innerHTML = `
+      <div class="tile-top">
+        <div class="tile-name">${dest.name}</div>
+        <div class="tile-drive">🚗 ${dest.drive} hrs</div>
+      </div>
+      <div class="tile-tags">${tagHtml}${dogTag}<span class="tag budget">$${dest.budgetMin}–${Math.min(dest.budgetMax, state.inputs.budget * 1.2 | 0)}/person</span></div>
+      <div class="tile-highlight">${dest.highlight}</div>
+      <div class="tile-why">"${dest.why}"</div>
+      <div class="tile-links">
+        <a class="tile-link" href="${dest.mapLink}" target="_blank">📍 Map</a>
+        ${dest.dog && dest.bringfido ? `<a class="tile-link" href="${dest.bringfido}" target="_blank">🐾 BringFido</a>` : ''}
+        <a class="tile-link" href="${dest.alltrails}" target="_blank">🥾 AllTrails</a>
+        <a class="tile-link" href="${dest.airbnb}" target="_blank">🏡 Airbnb</a>
+      </div>
+      <button class="choose-btn" onclick="chooseDest('${dest.id}')">Plan this trip →</button>
+    `;
+    grid.appendChild(tile);
+  });
+
+  window.scrollTo({top: document.getElementById('results').offsetTop - 60, behavior:'smooth'});
+}
+
+// =============================================
+// CHOOSE DESTINATION & BUILD ITINERARY
+// =============================================
+function chooseDest(id) {
+  const dest = DESTINATIONS.find(d => d.id === id);
+  if (!dest) return;
+  state.selectedTile = dest;
+
+  document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('tile-' + id).classList.add('selected');
+
+  const days = parseInt(state.inputs.days) || 2;
+  const itinDays = days <= 1 ? 1 : days <= 2 ? 2 : 3;
+  const itinData = dest.itinerary[itinDays] || dest.itinerary[Object.keys(dest.itinerary)[0]];
+
+  // Itinerary pane
+  let planHtml = '';
+  itinData.forEach(d => {
+    planHtml += `<div class="day-block"><div class="day-label">${d.day}</div>`;
+    d.acts.forEach(a => {
+      planHtml += `<div class="activity-row"><span class="activity-time">${a.t}</span><span>${a.a}</span></div>`;
+    });
+    planHtml += '</div>';
+  });
+  document.getElementById('pane-plan').innerHTML = planHtml;
+
+  // Budget pane
+  const b = dest.budget;
+  let budgetHtml = '';
+  const budgetItems = [
+    {label:'Gas (round trip)', cost: b.gas},
+    {label:'Lodging (' + (itinDays > 1 ? itinDays - 1 : 1) + ' night' + (itinDays > 2 ? 's' : '') + ')', cost: b.lodging},
+    {label:'Food & drinks', cost: b.food},
+    {label:'Activities', cost: b.activities},
+  ];
+  if (b.hotSprings) budgetItems.push({label:'Hot springs', cost: b.hotSprings});
+  const perPerson = state.inputs.budget;
+  budgetItems.push({label:'Est. total / person', cost: '~$' + perPerson});
+
+  budgetItems.forEach(item => {
+    budgetHtml += `<div class="budget-row"><span>${item.label}</span><span>${item.cost}</span></div>`;
+  });
+  if (b.note) budgetHtml += `<div class="budget-note">💡 ${b.note}</div>`;
+  document.getElementById('pane-budget').innerHTML = budgetHtml;
+
+  // Pack pane
+  const dog = state.inputs.dog;
+  let packItems = [...dest.pack];
+  if (!dog) packItems = packItems.filter(p => !p.toLowerCase().includes('dog'));
+  const icons = {'Microspikes':'🧊','Swimsuit':'👙','Dog':'🐾','River':'👡','Layers':'🧥','Sun hat':'🧢','SPF':'☀️','Water':'💧','Headlamp':'🔦','Camera':'📷','Binoculars':'🔭','Cash':'💵','Ski':'⛷️','Warm':'🧤','Sandals':'👡','Rain':'🌧️','Boots':'🥾'};
+  const getIcon = (item) => {
+    for (const [k,v] of Object.entries(icons)) { if (item.includes(k)) return v; }
+    return '✓';
+  };
+  document.getElementById('pane-pack').innerHTML = '<ul class="pack-list">' +
+    packItems.map(p => `<li class="pack-item"><span class="pack-icon">${getIcon(p)}</span>${p}</li>`).join('') +
+    '</ul>';
+
+  // Book pane
+  document.getElementById('pane-book').innerHTML = `
+    <div class="book-grid">
+      <div class="book-card">
+        <h4>🏡 Airbnb stays in ${dest.name}</h4>
+        <p>Filter by dog-friendly + dates</p>
+        <a class="book-link" href="${dest.airbnb}" target="_blank">Search Airbnb →</a>
+      </div>
+      <div class="book-card">
+        <h4>🏠 VRBO in ${dest.name}</h4>
+        <p>Great for groups and whole-home rentals</p>
+        <a class="book-link" href="${dest.vrbo}" target="_blank">Search VRBO →</a>
+      </div>
+      ${dest.dog ? `<div class="book-card">
+        <h4>🐾 BringFido — ${dest.name}</h4>
+        <p>Dog-friendly hotels, activities & dining</p>
+        <a class="book-link" href="${dest.bringfido}" target="_blank">Search BringFido →</a>
+      </div>` : ''}
+      <div class="book-card">
+        <h4>🥾 AllTrails — ${dest.name}</h4>
+        <p>Current trail conditions & reviews</p>
+        <a class="book-link" href="${dest.alltrails}" target="_blank">View trails →</a>
+      </div>
+      <div class="book-card">
+        <h4>📍 Google Maps</h4>
+        <p>Navigate, explore, and find restaurants</p>
+        <a class="book-link" href="${dest.mapLink}" target="_blank">Open in Maps →</a>
+      </div>
+    </div>`;
+
+  // Flex toggles
+  const flexOptions = [
+    {label:'😌 More relaxing', action: () => applyFlex('relaxing')},
+    {label:'🏔️ More adventure', action: () => applyFlex('adventurous')},
+    {label:'💰 Cheaper option', action: () => applyFlex('cheap')},
+    {label:'🐾 Toggle dog-friendly', action: () => toggleDog()},
+    {label:'🔄 Try different region', action: () => restart()},
+  ];
+  const flexDiv = document.getElementById('flex-chips');
+  flexDiv.innerHTML = '';
+  flexOptions.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'flex-chip';
+    btn.textContent = opt.label;
+    btn.onclick = opt.action;
+    flexDiv.appendChild(btn);
+  });
+
+  // Share card
+  const groupLabel = {solo:'solo traveler', duo:'2 people', small:'small group', large:'crew'}[state.inputs.group] || '2 people';
+  const shareText = dest.share(itinDays, groupLabel, state.inputs.budget);
+  document.getElementById('share-text').textContent = shareText;
+
+  document.getElementById('itinerary-panel').style.display = 'block';
+  switchTab('plan', document.querySelector('.itin-tab'));
+  window.scrollTo({top: document.getElementById('itinerary-panel').offsetTop - 60, behavior:'smooth'});
+}
+
+// =============================================
+// TABS
+// =============================================
+function switchTab(id, el) {
+  document.querySelectorAll('.itin-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.itin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  else document.querySelectorAll('.itin-tab')[['plan','budget','pack','book'].indexOf(id)]?.classList.add('active');
+}
+
+// =============================================
+// FLEX & SHARE
+// =============================================
+function applyFlex(mode) {
+  if (mode === 'relaxing') {
+    state.inputs.vibes = [...new Set([...state.inputs.vibes, 'relaxing', 'hot springs'])];
+  } else if (mode === 'adventurous') {
+    state.inputs.vibes = [...new Set([...state.inputs.vibes, 'hiking', 'stargazing'])];
+  } else if (mode === 'cheap') {
+    state.inputs.budget = Math.max(200, state.inputs.budget - 150);
+  }
+  showResults();
+}
+
+function toggleDog() {
+  state.inputs.dog = !state.inputs.dog;
+  document.getElementById('dog-toggle').checked = state.inputs.dog;
+  showResults();
+}
+
+function copyShare() {
+  const text = document.getElementById('share-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+  });
+}
+
+function restart() {
+  state.step = 1;
+  state.selectedTile = null;
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('itinerary-panel').style.display = 'none';
+  document.getElementById('wizard').style.display = 'none';
+  document.getElementById('top').style.display = 'block';
+
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.toggle('active', i === 0);
+  });
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
 </body>
 </html>
